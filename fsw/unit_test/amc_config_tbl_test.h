@@ -1,4 +1,3 @@
-
 #ifndef AMC_CONFIG_TBL_TEST_H
 #define AMC_CONFIG_TBL_TEST_H
 

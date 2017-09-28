@@ -8,8 +8,6 @@
 
 #include "amc_app.h"
 
-extern AMC_AppData_t  AMC_AppData;
-
 #ifdef __cplusplus
 extern "C" {
 #endif

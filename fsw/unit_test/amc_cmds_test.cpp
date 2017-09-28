@@ -1,9 +1,7 @@
-
+#include "cfe.h"
+#include "amc_msg.h"
 #include "amc_cmds_test.h"
 #include "amc_test_utils.h"
-
-#include "amc_msg.h"
-
 #include "uttest.h"
 #include "ut_osapi_stubs.h"
 #include "ut_cfe_sb_stubs.h"

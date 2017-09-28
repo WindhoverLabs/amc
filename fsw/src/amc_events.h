@@ -1,4 +1,3 @@
-    
 #ifndef AMC_EVENTS_H
 #define AMC_EVENTS_H
 

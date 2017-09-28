@@ -1,4 +1,3 @@
-    
 #ifndef AMC_VERSION_H
 #define AMC_VERSION_H
 

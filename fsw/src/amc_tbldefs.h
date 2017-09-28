@@ -1,4 +1,3 @@
-    
 #ifndef AMC_TBLDEFS_H
 #define AMC_TBLDEFS_H
 

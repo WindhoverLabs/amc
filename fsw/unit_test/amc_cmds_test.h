@@ -1,4 +1,3 @@
-
 #ifndef AMC_CMDS_TEST_H
 #define AMC_CMDS_TEST_H
 

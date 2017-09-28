@@ -1,4 +1,3 @@
-
 #ifndef AMC_APP_TEST_H
 #define AMC_APP_TEST_H
 

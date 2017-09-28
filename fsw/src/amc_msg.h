@@ -1,4 +1,3 @@
-    
 #ifndef AMC_MSG_H
 #define AMC_MSG_H
 

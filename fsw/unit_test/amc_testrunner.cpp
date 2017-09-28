@@ -1,6 +1,4 @@
-
 #include "uttest.h"
-
 #include "amc_app_test.h"
 #include "amc_cmds_test.h"
 #include "amc_config_tbl_test.h"
