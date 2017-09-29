@@ -31,22 +31,32 @@
 *
 *****************************************************************************/
 
-#include "uttest.h"
-#include "amc_app_test.h"
-#include "amc_cmds_test.h"
-#include "amc_pwm_config_tbl_test.h"
-#include "amc_mixer_config_tbl_test.h"
+#include "cfe.h"
+#include "amc_msg.h"
 #include "amc_motor_update_test.h"
+#include "amc_test_utils.h"
+#include "uttest.h"
+#include "ut_osapi_stubs.h"
+#include "ut_cfe_sb_stubs.h"
+#include "ut_cfe_es_stubs.h"
+#include "ut_cfe_es_hooks.h"
+#include "ut_cfe_evs_stubs.h"
+#include "ut_cfe_evs_hooks.h"
+#include "ut_cfe_time_stubs.h"
+#include "ut_cfe_psp_memutils_stubs.h"
+#include "ut_cfe_tbl_stubs.h"
+#include "ut_cfe_fs_stubs.h"
+#include "ut_cfe_time_stubs.h"
 
-int main(void)
-{   
-    AMC_App_Test_AddTestCases();
-    AMC_Cmds_Test_AddTestCases();
-    AMC_PWM_Config_Tbl_Test_AddTestCases();
-    AMC_Mixer_Config_Tbl_Test_AddTestCases();
-    AMC_Motor_Update_Test_AddTestCases();
-
-    return(UtTest_Run());
+void AMC_Motor_Update_Test_Case1(void)
+{
 
 }
+
+
+void AMC_Motor_Update_Test_AddTestCases(void)
+{
+    UtTest_Add(AMC_Motor_Update_Test_Case1, AMC_Test_Setup, AMC_Test_TearDown, "AMC_Motor_Update_Test_Case1");
+}
+
 

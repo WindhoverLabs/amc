@@ -31,22 +31,17 @@
 *
 *****************************************************************************/
 
-#include "uttest.h"
-#include "amc_app_test.h"
-#include "amc_cmds_test.h"
-#include "amc_pwm_config_tbl_test.h"
-#include "amc_mixer_config_tbl_test.h"
-#include "amc_motor_update_test.h"
+#ifndef AMC_MIXER_CONFIG_TBL_TEST_H
+#define AMC_MIXER_CONFIG_TBL_TEST_H
 
-int main(void)
-{   
-    AMC_App_Test_AddTestCases();
-    AMC_Cmds_Test_AddTestCases();
-    AMC_PWM_Config_Tbl_Test_AddTestCases();
-    AMC_Mixer_Config_Tbl_Test_AddTestCases();
-    AMC_Motor_Update_Test_AddTestCases();
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    return(UtTest_Run());
+void AMC_Mixer_Config_Tbl_Test_AddTestCases(void);
 
+#ifdef __cplusplus
 }
+#endif
 
+#endif /* AMC_MIXER_CONFIG_TBL_TEST_H */

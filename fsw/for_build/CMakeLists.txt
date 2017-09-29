@@ -56,12 +56,14 @@ add_airliner_app_unit_test(AMC-UT
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_app_test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_app_test.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_cds_tbl_test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_cds_tbl_test.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_cmds_test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_cmds_test.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_config_tbl_test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_config_tbl_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_pwm_config_tbl_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_pwm_config_tbl_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_mixer_config_tbl_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_mixer_config_tbl_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_motor_update_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_motor_update_test.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_testrunner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_test_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_test_utils.h

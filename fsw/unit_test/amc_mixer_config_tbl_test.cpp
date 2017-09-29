@@ -33,7 +33,7 @@
 
 #include "cfe.h"
 #include "amc_msg.h"
-#include "amc_config_tbl_test.h"
+#include "amc_mixer_config_tbl_test.h"
 #include "amc_test_utils.h"
 #include "uttest.h"
 #include "ut_osapi_stubs.h"
@@ -48,15 +48,15 @@
 #include "ut_cfe_fs_stubs.h"
 #include "ut_cfe_time_stubs.h"
 
-void AMC_Config_Tbl_Test_Case1(void)
+void AMC_Mixer_Config_Tbl_Test_Case1(void)
 {
 
 }
 
 
-void AMC_Config_Tbl_Test_AddTestCases(void)
+void AMC_Mixer_Config_Tbl_Test_AddTestCases(void)
 {
-    UtTest_Add(AMC_Config_Tbl_Test_Case1, AMC_Test_Setup, AMC_Test_TearDown, "AMC_Config_Tbl_Test_Case1");
+    UtTest_Add(AMC_Mixer_Config_Tbl_Test_Case1, AMC_Test_Setup, AMC_Test_TearDown, "AMC_Mixer_Config_Tbl_Test_Case1");
 }
 
 
