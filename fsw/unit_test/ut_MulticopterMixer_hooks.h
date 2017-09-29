@@ -31,39 +31,33 @@
  *
  ****************************************************************************/
 
+
 #include "cfe.h"
-#include "utassert.h"
-#include "ut_osapi_stubs.h"
-#include <time.h>
-#include <string.h>
 
-Ut_PX4Lib_HookTable_t        Ut_PX4Lib_HookTable;
-Ut_PX4Lib_ReturnCodeTable_t  Ut_PX4Lib_ReturnCodeTable[UT_PX4LIB_MAX_INDEX];
+void        Ut_CFE_ES_ClearSysLogQueue(void);
+uint32      Ut_CFE_EVS_GetEventQueueDepth(void);
+int32       Ut_CFE_ES_RunLoopHook(uint32 *ExitStatus);
+int32       Ut_CFE_ES_WriteToSysLog(const char *SysLogEntryText);
+boolean     Ut_CFE_ES_SysLogWritten(const char *ExpectedSysLogEntryText);
+uint32      Ut_CFE_ES_GetSysLogQueueDepth(void);
 
 
-int32 Ut_PX4Lib_Init(void)
+
+
+int32  Ut_SetConfigTablePtr(MultirotorMixer_ConfigTablePtr_t &ConfigTablePtr);
+uint32 Ut_mix(float *outputs, uint32 space, uint16 *status_reg);
+uint16 Ut_get_saturation_status(void);
+void   Ut_groups_required(uint32 &groups);
+
+uint32 Ut_set_trim(float trim)
 {
-
+    return 0;
 }
 
+/**
+ * @brief      Sets the thrust factor used to calculate mapping from desired thrust to pwm.
+ *
+ * @param[in]  val   The value
+ */
+virtual void            set_thrust_factor(float val) {m_ThrustFactor = val;}
 
-void Ut_PX4Lib__Clear(void)
-{
-    Ut_PX4Lib_Init();
-}
-
-
-
-
-MultirotorMixer::MultirotorMixer(
-    ControlCallback control_cb,
-    cpuaddr cb_handle) :
-        Mixer(control_cb, cb_handle),
-        m_ThrustFactor(0.0f)
-{
-//    memset(&m_SaturationStatus, 0, sizeof(m_SaturationStatus));
-}
-
-MultirotorMixer::~MultirotorMixer()
-{
-}

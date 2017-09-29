@@ -32,9 +32,12 @@
  ****************************************************************************/
 
 #include "cfe.h"
-#include "ut_px4lib_hooks.h"
+#include "utlist.h"
+#include "uttools.h"
+#include <string.h>
+#include "ut_MulticopterMixer_hooks.h"
 
-void Ut_PX4Lib_Clear(void)
+void Ut_MulticopterMixer_Clear(void)
 {
-    Ut_PX4Lib_Init();
+    Ut_MulticopterMixer_Init();
 }
