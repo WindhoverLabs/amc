@@ -65,8 +65,19 @@ add_airliner_app_unit_test(AMC-UT
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_testrunner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_test_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/amc_test_utils.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/MultirotorMixer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/Mixer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/ut_MultirotorMixer_hooks.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/ut_MultirotorMixer_hooks.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/ut_MultirotorMixer_stubs.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/ut_MultirotorMixer_stubs.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/mixer/ut_Mixer_stubs.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/pwm_limit/ut_pwm_limit_hooks.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/pwm_limit/ut_pwm_limit_hooks.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/pwm_limit/ut_pwm_limit_stubs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/pwm_limit/ut_pwm_limit_stubs.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/ut_amc_custom_hooks.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/ut_amc_custom_hooks.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/ut_amc_custom_stubs.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/ut_amc_custom_stubs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_app.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_config_utils.cpp

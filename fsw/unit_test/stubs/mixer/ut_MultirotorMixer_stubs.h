@@ -30,63 +30,58 @@
 * POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-
-#ifndef UT_MULTICOPTERMIXER_STUBS_H
-#define UT_MULTICOPTERMIXER_STUBS_H
+#ifndef UT_MULTIROTORMIXER_STUBS_H
+#define UT_MULTIROTORMIXER_STUBS_H
 
 #include "cfe.h"
+#include "utassert.h"
+#include "mixer/MultirotorMixer.h"
+#include <string.h>
 #include "mixer/MixerTables.h"
-#include "mixer/Mixer.h"
+//#include "UT_MultirotorMixer.h"
 
-namespace UT_MultirotorMixer
+typedef enum
 {
-    typedef enum
-    {
-        UT_MULTICOPTERMIXER_SETCONFIGTABLEPTR_INDEX,
-        UT_MULTICOPTERMIXER_MIX_INDEX,
-        UT_MULTICOPTERMIXER_GET_SATURATION_STATUS_INDEX,
-        UT_MULTICOPTERMIXER_GROUPS_REQUIRED_INDEX,
-        UT_MULTICOPTERMIXER_SET_TRIM_INDEX,
-        UT_MULTICOPTERMIXER_SET_THRUST_FACTOR_INDEX,
-        UT_MULTICOPTERMIXER_MAX_INDEX
-    } Ut_MultirotorMixer_INDEX_t;
+    UT_MULTIROTORMIXER_SETCONFIGTABLEPTR_INDEX,
+    UT_MULTIROTORMIXER_MIX_INDEX,
+    UT_MULTIROTORMIXER_GET_SATURATION_STATUS_INDEX,
+    UT_MULTIROTORMIXER_GROUPS_REQUIRED_INDEX,
+    UT_MULTIROTORMIXER_SET_TRIM_INDEX,
+    UT_MULTIROTORMIXER_SET_THRUST_FACTOR_INDEX,
+    UT_MULTIROTORMIXER_MAX_INDEX
+} Ut_MultirotorMixer_INDEX_t;
 
-    typedef struct
-    {
-        int32 SetConfigTablePtr_Return;
-        int32 mix_Return;
-        int32 get_saturation_status_Return;
-        int32 groups_required_Return;
-        int32 set_trim_Return;
-        int32 set_thrust_factor_Return;
-    } MultirotorMixer_Returns_t;
+typedef struct
+{
+    int32  (*SetConfigTablePtr)(MultirotorMixer_ConfigTablePtr_t &);
+    uint32 (*mix)(float *, uint32, uint16 *);
+    uint16 (*get_saturation_status)(void);
+    void   (*groups_required)(uint32 &);
+    uint32 (*set_trim)(float);
+    void   (*set_thrust_factor)(float);
+} Ut_MultirotorMixer_HookTable_t;
 
-    typedef struct
-    {
-        int32  (*SetConfigTablePtr(MultirotorMixer_ConfigTablePtr_t &));
-        uint32 (*mix(float *, uint32, uint16 *));
-        uint16 (*get_saturation_status(void));
-        void   (*groups_required(uint32 &));
-    } Ut_MultirotorMixer_HookTable_t;
+typedef struct
+{
+    int32 SetConfigTablePtr_Return;
+    int32 mix_Return;
+    int32 get_saturation_status_Return;
+    int32 groups_required_Return;
+    int32 set_trim_Return;
+    int32 set_thrust_factor_Return;
+} Ut_MultirotorMixer_Returns_t;
 
-    typedef struct
-    {
-        int32   Value;
-        uint32  Count;
-        boolean ContinueReturnCodeAfterCountZero;
-    } Ut_MultirotorMixer_ReturnCodeTable_t;
+typedef struct
+{
+    int32   Value;
+    uint32  Count;
+    boolean ContinueReturnCodeAfterCountZero;
+} Ut_MultirotorMixer_ReturnCodeTable_t;
 
-    int32 Init(void);
-    void  Reset(void);
-    void  SetFunctionHook(uint32 Index, void *FunPtr);
-    void  SetReturnCode(uint32 Index, int32 RtnVal, uint32 CallCnt);
-    void  ContinueReturnCodeAfterCountZero(uint32 Index);
-
-    int32  SetConfigTablePtr(MultirotorMixer_ConfigTablePtr_t &ConfigTablePtr);
-    uint32 mix(float *outputs, uint32 space, uint16 *status_reg);
-    uint16 get_saturation_status(void);
-    void   groups_required(uint32 &groups);
-    uint32 set_trim(float trim);
-};
+int32 Ut_MultirotorMixer_Init(void);
+void  Ut_MultirotorMixer_Reset(void);
+void  Ut_MultirotorMixer_SetFunctionHook(uint32 Index, void *FunPtr);
+void  Ut_MultirotorMixer_SetReturnCode(uint32 Index, int32 RtnVal, uint32 CallCnt);
+void  Ut_MultirotorMixer_ContinueReturnCodeAfterCountZero(uint32 Index);
 
 #endif

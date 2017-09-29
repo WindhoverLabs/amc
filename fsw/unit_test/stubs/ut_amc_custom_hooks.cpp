@@ -12,8 +12,8 @@
 *    notice, this list of conditions and the following disclaimer in
 *    the documentation and/or other materials provided with the
 *    distribution.
-* 3. Neither the name Windhover Labs, L.L.C. nor the names of its 
-*    contributors may be used to endorse or promote products derived 
+* 3. Neither the name Windhover Labs, L.L.C. nor the names of its
+*    contributors may be used to endorse or promote products derived
 *    from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -31,20 +31,16 @@
 *
 *****************************************************************************/
 
-#ifndef UT_MULTICOPTER_STUBS_H
-#define UT_MULTICOPTER_STUBS_H
-
 #include "cfe.h"
-#include "mixer/MixerTables.h"
-#include "mixer/Mixer.h"
+#include "pwm_limit/pwm_limit.h"
 
-class Mixer
+uint32 UT_InitDevice(void)
 {
-public:
+    return 0;
+}
 
-    Mixer(
-        ControlCallback control_cb,
-        cpuaddr cb_handle);
-};
 
-#endif
+void UT_SetMotorOutputs(const uint16 *PWM)
+{
+
+}

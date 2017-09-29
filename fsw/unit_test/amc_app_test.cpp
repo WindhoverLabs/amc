@@ -202,7 +202,7 @@ void Test_AMC_InitPipe_Fail_CreateDATAPipe(void)
                    | CFE_SOFTWARE_BUS_SERVICE | CFE_SB_NOT_IMPLEMENTED;
     int32 expected = CFE_SB_BAD_ARGUMENT;
 
-    Ut_CFE_SB_SetReturnCode(UT_CFE_SB_CREATEPIPE_INDEX, expected, 3);
+    Ut_CFE_SB_SetReturnCode(UT_CFE_SB_CREATEPIPE_INDEX, expected, 2);
 
     /* Execute the function being tested */
     result = oAMC.InitPipe();
@@ -312,26 +312,6 @@ void Test_AMC_InitApp_Fail_InitConfigTbl(void)
 
     /* Verify results */
     UtAssert_True (result == expected, "InitApp, fail init config table");
-}
-
-
-/**
- * Test AMC_InitApp(), fail init CDS table
- */
-void Test_AMC_InitApp_Fail_InitCDSTbl(void)
-{
-    AMC oAMC;
-
-    int32 result = CFE_SUCCESS;
-    int32 expected = CFE_ES_CDS_INVALID_NAME;
-
-    Ut_CFE_ES_SetReturnCode(UT_CFE_ES_REGISTERCDS_INDEX, expected, 1);
-
-    /* Execute the function being tested */
-    result = oAMC.InitApp();
-
-    /* Verify results */
-    UtAssert_True (result == expected, "InitApp, fail init CDS table");
 }
 
 
@@ -511,8 +491,6 @@ void AMC_App_Test_AddTestCases(void)
                "Test_AMC_InitApp_Fail_InitData");
     UtTest_Add(Test_AMC_InitApp_Fail_InitConfigTbl, AMC_Test_Setup, AMC_Test_TearDown,
                "Test_AMC_InitApp_Fail_InitConfigTbl");
-    UtTest_Add(Test_AMC_InitApp_Fail_InitCDSTbl, AMC_Test_Setup, AMC_Test_TearDown,
-               "Test_AMC_InitApp_Fail_InitCDSTbl");
     UtTest_Add(Test_AMC_InitApp_Nominal, AMC_Test_Setup, AMC_Test_TearDown,
                "Test_AMC_InitApp_Nominal");
 

@@ -36,101 +36,37 @@
 #include "mixer/MultirotorMixer.h"
 #include <string.h>
 #include "mixer/MixerTables.h"
-#include "UT_MultirotorMixer.h"
+//#include "UT_MultirotorMixer.h"
 
-
-
-MultirotorMixer::MultirotorMixer(
-    ControlCallback control_cb,
-    cpuaddr cb_handle) :
-        Mixer(control_cb, cb_handle),
-        m_ThrustFactor(0.0f)
-{
-//    memset(&m_SaturationStatus, 0, sizeof(m_SaturationStatus));
-}
-
-MultirotorMixer::~MultirotorMixer()
-{
-}
-
-int32 MultirotorMixer::SetConfigTablePtr(
+int32  UT_SetConfigTablePtr(
     MultirotorMixer_ConfigTablePtr_t &ConfigTablePtr)
 {
     return 0;
 };
 
-uint32
-MultirotorMixer::mix(float *outputs, uint32 space, uint16 *status_reg)
+uint32 UT_mix(float *outputs, uint32 space, uint16 *status_reg)
 {
     return 0;
 };
 
-void
-MultirotorMixer::update_saturation_status(uint32 index, bool clipping_high, bool clipping_low)
+void   UT_update_saturation_status(uint32 index, bool clipping_high, bool clipping_low)
 {
 }
 
-uint16 MultirotorMixer::get_saturation_status()
+uint16 UT_get_saturation_status()
 {
     return 0;
 };
 
-void
-MultirotorMixer::groups_required(uint32 &groups)
+void   UT_groups_required(uint32 &groups)
 {
 
 };
 
-uint32 MultirotorMixer::set_trim(float trim)
+uint32 UT_set_trim(float trim)
 {
     return 0;
 }
-
-int32  UT_MultirotorMixer::Init(void)
-{
-    return 0;
-
-};
-
-void   UT_MultirotorMixer::Reset(void)
-{
-
-};
-
-void   UT_MultirotorMixer::SetFunctionHook(uint32 Index, void *FunPtr)
-{
-
-};
-
-void   UT_MultirotorMixer::SetReturnCode(uint32 Index, int32 RtnVal, uint32 CallCnt)
-{
-
-};
-
-void   UT_MultirotorMixer::ContinueReturnCodeAfterCountZero(uint32 Index)
-{
-
-};
-
-int32  UT_MultirotorMixer::SetConfigTablePtr(MultirotorMixer_ConfigTablePtr_t &ConfigTablePtr)
-{
-    return 0;
-};
-
-uint32 UT_MultirotorMixer::mix(float *outputs, uint32 space, uint16 *status_reg)
-{
-    return 0;
-};
-
-uint16 UT_MultirotorMixer::get_saturation_status(void)
-{
-    return 0;
-};
-
-void   UT_MultirotorMixer::groups_required(uint32 &groups)
-{
-
-};
 
 
 
