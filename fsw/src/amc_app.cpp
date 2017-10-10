@@ -156,15 +156,6 @@ int32 AMC::InitPipe()
             goto AMC_InitPipe_Exit_Tag;
         }
 
-        iStatus = CFE_SB_SubscribeEx(PX4_RC_CHANNELS_MID, SchPipeId, CFE_SB_Default_Qos, 1);
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "CMD Pipe failed to subscribe to PX4_RC_CHANNELS_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
-
     }
     else
     {
