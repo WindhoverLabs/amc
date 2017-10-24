@@ -92,4 +92,7 @@ add_airliner_app_unit_test(AMC-UT
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/
+        
+    VALGRIND_SUPPRESSION_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/valgrind.supp
 )
