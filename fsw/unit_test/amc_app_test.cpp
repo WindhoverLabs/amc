@@ -453,7 +453,7 @@ void Test_AMC_AppMain_Nominal_Wakeup(void)
     Ut_CFE_ES_SetReturnCode(UT_CFE_ES_RUNLOOP_INDEX, FALSE, 2);
 
     /* Execute the function being tested */
-    oAMC.AppMain();
+    //oAMC.AppMain();
 
 }
 
