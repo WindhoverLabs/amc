@@ -609,7 +609,7 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
-    ActuatorOutputs.timestamp = CVT.ActuatorControls0.timestamp;
+    ActuatorOutputs.Timestamp = CVT.ActuatorControls0.Timestamp;
 
     /* Do mixing */
     ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
