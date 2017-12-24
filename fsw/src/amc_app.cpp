@@ -52,6 +52,7 @@ extern "C" {
 #include "amc_msg.h"
 #include "amc_version.h"
 #include <math.h>
+#include "lib/px4lib.h"
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -325,6 +326,7 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case PX4_ACTUATOR_ARMED_MID:
                 memcpy(&CVT.ActuatorArmed, MsgPtr, sizeof(CVT.ActuatorArmed));
+
                 break;
 
             case PX4_ACTUATOR_CONTROLS_0_MID:
@@ -609,7 +611,7 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
-    ActuatorOutputs.Timestamp = CVT.ActuatorControls0.Timestamp;
+    ActuatorOutputs.Timestamp = PX4LIB_GetPX4TimeUs();
 
     /* Do mixing */
     ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
