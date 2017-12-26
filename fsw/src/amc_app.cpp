@@ -54,6 +54,9 @@ extern "C" {
 #include <math.h>
 #include "lib/px4lib.h"
 
+/* TODO:  Delete this when the PWM is no longer simulated on the PX4 side. */
+#define PWM_SIM_DISARMED_MAGIC (900)
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -317,7 +320,6 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
 	{
             case AMC_UPDATE_MOTORS_MID:
-                UpdateMotors();
                 break;
 
             case AMC_SEND_HK_MID:
@@ -331,6 +333,7 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case PX4_ACTUATOR_CONTROLS_0_MID:
                 memcpy(&CVT.ActuatorControls0, MsgPtr, sizeof(CVT.ActuatorControls0));
+                UpdateMotors();
                 break;
 
             default:
@@ -611,46 +614,77 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
-    ActuatorOutputs.Timestamp = PX4LIB_GetPX4TimeUs();
-
-    /* Do mixing */
-    ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
-
-    /* Disable unused ports by setting their output to NaN */
-    for (size_t i = ActuatorOutputs.Count;
-         i < sizeof(ActuatorOutputs.Output) / sizeof(ActuatorOutputs.Output[0]);
-         i++) {
-        ActuatorOutputs.Output[i] = NAN;
-    }
-
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
         disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
         min_pwm[i] = PwmConfigTblPtr->PwmMin;
         max_pwm[i] = PwmConfigTblPtr->PwmMax;
     }
 
-    PwmLimit_Calc(CVT.ActuatorArmed.Armed,
-            FALSE/*_armed.prearmed*/,
-            ActuatorOutputs.Count,
-            reverse_mask,
-            disarmed_pwm,
-            min_pwm,
-            max_pwm,
-            ActuatorOutputs.Output,
-            pwm,
-            &PwmLimit);
-
+    /* Never actuate any motors unless the system is armed.  Check to see if
+     * its armed, or in lock down before continuing
+     */
     if (CVT.ActuatorArmed.Lockdown)
     {
         SetMotorOutputs(disarmed_pwm);
     }
-    else if(!CVT.ActuatorArmed.InEscCalibrationMode)
+    else if(CVT.ActuatorArmed.Armed)
     {
-        SetMotorOutputs(pwm);
-    }
+		ActuatorOutputs.Timestamp = PX4LIB_GetPX4TimeUs();
 
-    CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
-    CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
+		/* Do mixing */
+		ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
+
+		/* Disable unused ports by setting their output to NaN */
+		for (size_t i = ActuatorOutputs.Count;
+			 i < sizeof(ActuatorOutputs.Output) / sizeof(ActuatorOutputs.Output[0]);
+			 i++) {
+			ActuatorOutputs.Output[i] = NAN;
+		}
+
+		PwmLimit_Calc(
+				CVT.ActuatorArmed.Armed,
+				FALSE/*_armed.prearmed*/,
+				ActuatorOutputs.Count,
+				reverse_mask,
+				disarmed_pwm,
+				min_pwm,
+				max_pwm,
+				ActuatorOutputs.Output,
+				pwm,
+				&PwmLimit);
+
+		if(!CVT.ActuatorArmed.InEscCalibrationMode)
+		{
+			SetMotorOutputs(pwm);
+		}
+
+		/* TODO:  Delete this after PX4 bridge is no longer necessary.  This is
+		 * only here to satisfy the PWM Sim interface on the PX4 side.  The
+		 * message documentation states the actuator_outputs message is supposed
+		 * to be -1.0 to 1.0, which it is until the following step.  The problem
+		 * is the sim expects 1000.0 - 2000.0. */
+		for (unsigned i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
+			/* last resort: catch NaN, INF and out-of-band errors */
+			if (i < ActuatorOutputs.Count &&
+				isfinite(ActuatorOutputs.Output[i]) &&
+				ActuatorOutputs.Output[i] >= -1.0f &&
+				ActuatorOutputs.Output[i] <= 1.0f) {
+				/* scale for PWM output 1000 - 2000us */
+				ActuatorOutputs.Output[i] = 1500 + (500 * ActuatorOutputs.Output[i]);
+
+			} else {
+				/*
+				 * Value is NaN, INF or out of band - set to the minimum value.
+				 * This will be clearly visible on the servo status and will limit the risk of accidentally
+				 * spinning motors. It would be deadly in flight.
+				 */
+				ActuatorOutputs.Output[i] = PWM_SIM_DISARMED_MAGIC;
+			}
+		}
+
+		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
+		CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
+    }
 }
 
 
