@@ -663,23 +663,30 @@ void AMC::UpdateMotors(void)
 		 * message documentation states the actuator_outputs message is supposed
 		 * to be -1.0 to 1.0, which it is until the following step.  The problem
 		 * is the sim expects 1000.0 - 2000.0. */
-		for (unsigned i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-			/* last resort: catch NaN, INF and out-of-band errors */
-			if (i < ActuatorOutputs.Count &&
-				isfinite(ActuatorOutputs.Output[i]) &&
-				ActuatorOutputs.Output[i] >= -1.0f &&
-				ActuatorOutputs.Output[i] <= 1.0f) {
-				/* scale for PWM output 1000 - 2000us */
-				ActuatorOutputs.Output[i] = 1500 + (500 * ActuatorOutputs.Output[i]);
+		{
+			for (unsigned i = 0; i < ActuatorOutputs.Count; i++) {
+				/* last resort: catch NaN, INF and out-of-band errors */
+				if (i < ActuatorOutputs.Count &&
+					isfinite(ActuatorOutputs.Output[i]) &&
+					ActuatorOutputs.Output[i] >= -1.0f &&
+					ActuatorOutputs.Output[i] <= 1.0f) {
+					/* scale for PWM output 1000 - 2000us */
+					ActuatorOutputs.Output[i] = 1500 + (500 * ActuatorOutputs.Output[i]);
 
-			} else {
-				/*
-				 * Value is NaN, INF or out of band - set to the minimum value.
-				 * This will be clearly visible on the servo status and will limit the risk of accidentally
-				 * spinning motors. It would be deadly in flight.
-				 */
-				ActuatorOutputs.Output[i] = PWM_SIM_DISARMED_MAGIC;
+				} else {
+					/*
+					 * Value is NaN, INF or out of band - set to the minimum value.
+					 * This will be clearly visible on the servo status and will limit the risk of accidentally
+					 * spinning motors. It would be deadly in flight.
+					 */
+					ActuatorOutputs.Output[i] = PWM_SIM_DISARMED_MAGIC;
+				}
 			}
+			ActuatorOutputs.Output[6] = 1500.0f;
+			ActuatorOutputs.Output[7] = 1500.0f;
+			ActuatorOutputs.Output[8] = 1500.0f;
+			ActuatorOutputs.Output[9] = 1000.0f;
+			ActuatorOutputs.Output[10] = 1000.0f;
 		}
 
 		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
