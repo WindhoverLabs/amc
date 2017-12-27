@@ -429,6 +429,40 @@ void AMC::ProcessNewParamCmds(CFE_SB_Msg_t* MsgPtr)
     }
 }
 
+PARAMS_ParamData_t* AMC::GetParamData(char* name)
+{
+	PARAMS_ParamData_t* retData = 0;
+
+	/* Iterate over passed table to find param with passed name */
+	for(int i = 0; i < AMC_MAX_PARAMS; ++i)
+	{
+		if (strcmp(PwmConfigTblPtr->param_data[i].name, name) == 0)
+		{
+			retData = &PwmConfigTblPtr->param_data[i];
+			break;
+		}
+	}
+
+	return retData;
+}
+
+float AMC::GetParamValue(char* name)
+{
+	float retValue = 0; // what would an expected default return be, and could it impact behavior?
+
+	/* Iterate over passed table to find param with passed name */
+	for(int i = 0; i < AMC_MAX_PARAMS; ++i)
+	{
+		if (strcmp(PwmConfigTblPtr->param_data[i].name, name) == 0)
+		{
+			retValue = PwmConfigTblPtr->param_data[i].value;
+			break;
+		}
+	}
+
+	return retValue;
+}
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -656,7 +690,7 @@ void AMC::StopMotors(void)
     uint16 disarmed_pwm[AMC_MAX_MOTOR_OUTPUTS];
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        //disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+        disarmed_pwm[i] = GetParamValue("PWN_DISARMED");
     }
 
     SetMotorOutputs(disarmed_pwm);
@@ -690,9 +724,9 @@ void AMC::UpdateMotors(void)
     }
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-//        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
-//        min_pwm[i] = PwmConfigTblPtr->PwmMin;
-//        max_pwm[i] = PwmConfigTblPtr->PwmMax;
+        disarmed_pwm[i] = GetParamValue("PWN_DISARMED");
+        min_pwm[i] = GetParamValue("PWN_MIN");
+        max_pwm[i] = GetParamValue("PWN_MAX");
     }
 
     PwmLimit_Calc(CVT.ActuatorArmed.Armed,
