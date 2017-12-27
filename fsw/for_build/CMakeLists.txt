@@ -45,6 +45,7 @@ add_airliner_app_def(amc
    
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
+        ${PROJECT_SOURCE_DIR}/mavlink/include/mavlink/v1.0/common/
         ${PX4_MSGS_DIR}
 
     USER_DOCS   ${CMAKE_CURRENT_SOURCE_DIR}/user_doxy.in

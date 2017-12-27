@@ -316,6 +316,9 @@ public:
      *************************************************************************/
     boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
+    void SendParams();
+    void ProcessNewParamCmds(CFE_SB_Msg_t* MsgPtr);
+
 private:
     /************************************************************************/
     /** \brief Set the actual motor outputs.

@@ -52,7 +52,7 @@ extern "C" {
 #include "amc_msg.h"
 #include "amc_version.h"
 #include <math.h>
-
+#include "params_msg.h"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -211,7 +211,6 @@ void AMC::InitData()
                    AMC_HK_TLM_MID, sizeof(HkTlm), TRUE);
 }
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* AMC initialization                                              */
@@ -359,6 +358,75 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
     }
 
     return (iStatus);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Send Params                                     */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void AMC::SendParams()
+{
+	int32  Status=CFE_SUCCESS;
+	PARAMS_SendParamDataCmd_t ParamDataMsg = {0};
+	CFE_SB_MsgPtr_t 	CmdMsgPtr;
+
+	/* Iterate over param table and broadcast to SB */
+	for(int i = 0; i < AMC_MAX_PARAMS; ++i)
+	{
+		/* Init Airliner message */
+		CFE_SB_InitMsg(&ParamDataMsg, PARAMS_PARAM_MID, sizeof(PARAMS_SendParamDataCmd_t), FALSE);
+		CmdMsgPtr = (CFE_SB_MsgPtr_t)&ParamDataMsg;
+		CFE_SB_SetCmdCode(CmdMsgPtr, PARAMS_PARAM_DATA_CC);
+
+		//PwmConfigTblPtr
+		/* Update parameter message with current table index values */
+//		ParamDataMsg.param_data.value = PARAMS_AppData.ParamTblPtr->params[i].param_data.value;
+//		memcpy(ParamDataMsg.param_data.name, PARAMS_AppData.ParamTblPtr->params[i].param_data.name,
+//				sizeof(PARAMS_AppData.ParamTblPtr->params[i].param_data.name));
+//		ParamDataMsg.param_data.type = PARAMS_AppData.ParamTblPtr->params[i].param_data.type;
+//		ParamDataMsg.param_count = PARAMS_AppData.ParamCount;
+//		ParamDataMsg.param_index = param_index;
+
+		/* Send to SB */
+		Status = CFE_SB_SendMsg(CmdMsgPtr);
+		if (Status != CFE_SUCCESS)
+		{
+			OS_printf("Error sending param to SB\n");
+			/* TODO: Decide what to do if the send message fails. */
+		}
+	}
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process Params Commands                                            */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void AMC::ProcessNewParamCmds(CFE_SB_Msg_t* MsgPtr)
+{
+    uint32  uiCmdCode=0;
+
+    if (MsgPtr != NULL)
+    {
+        uiCmdCode = CFE_SB_GetCmdCode(MsgPtr);
+        switch (uiCmdCode)
+        {
+        	/* If params is sending param data route to GCS */
+            case PARAMS_PARAM_DATA_CC:
+                //HkTlm.CmdCnt++;
+//                (void) CFE_EVS_SendEvent(MAVLINK_CMD_INF_EID, CFE_EVS_INFORMATION,
+//                                  "Recvd param data to route to GCS");
+
+                /* Encode param into mavlink and send */
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
 
@@ -588,7 +656,7 @@ void AMC::StopMotors(void)
     uint16 disarmed_pwm[AMC_MAX_MOTOR_OUTPUTS];
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+        //disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
     }
 
     SetMotorOutputs(disarmed_pwm);
@@ -622,9 +690,9 @@ void AMC::UpdateMotors(void)
     }
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
-        min_pwm[i] = PwmConfigTblPtr->PwmMin;
-        max_pwm[i] = PwmConfigTblPtr->PwmMax;
+//        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+//        min_pwm[i] = PwmConfigTblPtr->PwmMin;
+//        max_pwm[i] = PwmConfigTblPtr->PwmMax;
     }
 
     PwmLimit_Calc(CVT.ActuatorArmed.Armed,
