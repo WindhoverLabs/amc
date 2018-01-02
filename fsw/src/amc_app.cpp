@@ -614,6 +614,20 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
+//    CVT.ActuatorArmed.Armed = true;
+//    CVT.ActuatorArmed.Lockdown = false;
+//    CVT.ActuatorArmed.ForceFailsafe = false;
+//    CVT.ActuatorControls0.Timestamp = 13329873;
+//    CVT.ActuatorControls0.SampleTime = 13327382;
+//    CVT.ActuatorControls0.Control[0] = -0.009131;
+//    CVT.ActuatorControls0.Control[1] = 0.003396;
+//    CVT.ActuatorControls0.Control[2] = 0.006336;
+//    CVT.ActuatorControls0.Control[3] = 0.393885;
+//    CVT.ActuatorControls0.Control[4] = 0.000000;
+//    CVT.ActuatorControls0.Control[5] = 0.000000;
+//    CVT.ActuatorControls0.Control[6] = 0.000000;
+//    CVT.ActuatorControls0.Control[7] = -1.000000;
+
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
         disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
         min_pwm[i] = PwmConfigTblPtr->PwmMin;
@@ -688,6 +702,24 @@ void AMC::UpdateMotors(void)
 			ActuatorOutputs.Output[9] = 1000.0f;
 			ActuatorOutputs.Output[10] = 1000.0f;
 		}
+
+//		OS_printf("ActuatorOutputs.Count = %u (11)\n" , ActuatorOutputs.Count);
+//		OS_printf("ActuatorOutputs.Output[0] = %f (1396.680176)\n" , ActuatorOutputs.Output[0]);
+//		OS_printf("ActuatorOutputs.Output[1] = %f (1391.089600)\n" , ActuatorOutputs.Output[1]);
+//		OS_printf("ActuatorOutputs.Output[2] = %f (1385.925171)\n" , ActuatorOutputs.Output[2]);
+//		OS_printf("ActuatorOutputs.Output[3] = %f (1401.844604)\n" , ActuatorOutputs.Output[3]);
+//		OS_printf("ActuatorOutputs.Output[4] = %f (1407.727173)\n" , ActuatorOutputs.Output[4]);
+//		OS_printf("ActuatorOutputs.Output[5] = %f (1380.042480)\n" , ActuatorOutputs.Output[5]);
+//		OS_printf("ActuatorOutputs.Output[6] = %f (1500.000000)\n" , ActuatorOutputs.Output[6]);
+//		OS_printf("ActuatorOutputs.Output[7] = %f (1500.000000)\n" , ActuatorOutputs.Output[7]);
+//		OS_printf("ActuatorOutputs.Output[8] = %f (1500.000000)\n" , ActuatorOutputs.Output[8]);
+//		OS_printf("ActuatorOutputs.Output[9] = %f (1000.000000)\n" , ActuatorOutputs.Output[9]);
+//		OS_printf("ActuatorOutputs.Output[10] = %f (1000.000000)\n" , ActuatorOutputs.Output[10]);
+//		OS_printf("ActuatorOutputs.Output[11] = %f (nan)\n" , ActuatorOutputs.Output[11]);
+//		OS_printf("ActuatorOutputs.Output[12] = %f (nan)\n" , ActuatorOutputs.Output[12]);
+//		OS_printf("ActuatorOutputs.Output[13] = %f (nan)\n" , ActuatorOutputs.Output[13]);
+//		OS_printf("ActuatorOutputs.Output[14] = %f (nan)\n" , ActuatorOutputs.Output[14]);
+//		OS_printf("ActuatorOutputs.Output[15] = %f (nan)\n" , ActuatorOutputs.Output[15]);
 
 		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
 		CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
