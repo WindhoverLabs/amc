@@ -593,7 +593,7 @@ void AMC::StopMotors(void)
     uint16 disarmed_pwm[AMC_MAX_MOTOR_OUTPUTS];
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+        //disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
     }
 
     SetMotorOutputs(disarmed_pwm);
@@ -629,9 +629,9 @@ void AMC::UpdateMotors(void)
 //    CVT.ActuatorControls0.Control[7] = -1.000000;
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
-        min_pwm[i] = PwmConfigTblPtr->PwmMin;
-        max_pwm[i] = PwmConfigTblPtr->PwmMax;
+//        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+//        min_pwm[i] = PwmConfigTblPtr->PwmMin;
+//        max_pwm[i] = PwmConfigTblPtr->PwmMax;
     }
 
     /* Never actuate any motors unless the system is armed.  Check to see if
@@ -754,6 +754,46 @@ int32 AMC::ControlCallback(
 
     return iStatus;
 }
+
+
+// params stuff
+
+int32 AMC::InitParams()
+{
+    int32 iStatus = -1;
+    uint16 				ParamCount = 0;
+	uint16 				ParamIndex = 0;
+	PRMLIB_ParamData_t  param;
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+    // Iterate over local param list
+    for(int i = 0; i < AMC_MAX_PARAMS; ++i)
+    {
+    	strcpy(param.name, PwmConfigTblPtr->param[i].name);
+    	param.vehicle_id = PwmConfigTblPtr->param[i].vehicle_id;
+    	param.component_id = PwmConfigTblPtr->param[i].component_id;
+
+    	if(PRMLIB_ParamExists(param) == TRUE)
+    	{
+    		PRMLIB_GetParamData(&param, &ParamIndex, &ParamCount);
+    		PRMLIB_CopyParamData(PwmConfigTblPtr->param[i], param);
+    	}
+    	else
+    	{
+
+    	}
+    }
+
+    iStatus = CFE_SUCCESS;
+
+    /* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+    return iStatus;
+}
+
 
 #ifdef __cplusplus
 }
