@@ -271,6 +271,15 @@ int32 AMC::InitApp()
         goto AMC_InitApp_Exit_Tag;
     }
 
+    iStatus = InitParams();
+    if (iStatus != CFE_SUCCESS)
+	{
+		(void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to init params (0x%08x)",
+								 (unsigned int)iStatus);
+		goto AMC_InitApp_Exit_Tag;
+	}
+
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
     {
@@ -771,22 +780,30 @@ int32 AMC::InitParams()
     // Iterate over local param list
     for(int i = 0; i < AMC_MAX_PARAMS; ++i)
     {
+    	OS_printf("In loop\n");
     	strcpy(param.name, PwmConfigTblPtr->param[i].name);
     	param.vehicle_id = PwmConfigTblPtr->param[i].vehicle_id;
     	param.component_id = PwmConfigTblPtr->param[i].component_id;
 
+    	// If the param exists in the lib then update local value with lib
     	if(PRMLIB_ParamExists(param) == TRUE)
     	{
-    		PRMLIB_GetParamData(&param, &ParamIndex, &ParamCount);
+    		OS_printf("Param exists\n");
+    		iStatus = PRMLIB_GetParamData(&param, &ParamIndex, &ParamCount);
     		PRMLIB_CopyParamData(PwmConfigTblPtr->param[i], param);
     	}
     	else
     	{
+    		OS_printf("adding param\n");
+    		iStatus = PRMLIB_AddParam(PwmConfigTblPtr->param[i]);
+    	}
 
+    	if(iStatus != CFE_SUCCESS)
+    	{
+    		OS_printf("fail\n");
+    		break;
     	}
     }
-
-    iStatus = CFE_SUCCESS;
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
