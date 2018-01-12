@@ -781,6 +781,7 @@ int32 AMC::InitParams()
     for(int i = 0; i < AMC_MAX_PARAMS; ++i)
     {
     	OS_printf("In loop\n");
+    	PRMLIB_PrintParam(PwmConfigTblPtr->param[i]);
     	strcpy(param.name, PwmConfigTblPtr->param[i].name);
     	param.vehicle_id = PwmConfigTblPtr->param[i].vehicle_id;
     	param.component_id = PwmConfigTblPtr->param[i].component_id;
@@ -789,8 +790,11 @@ int32 AMC::InitParams()
     	if(PRMLIB_ParamExists(param) == TRUE)
     	{
     		OS_printf("Param exists\n");
+
+    		PRMLIB_PrintParam(param);
     		iStatus = PRMLIB_GetParamData(&param, &ParamIndex, &ParamCount);
     		PRMLIB_CopyParamData(PwmConfigTblPtr->param[i], param);
+
     	}
     	else
     	{
