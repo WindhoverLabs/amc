@@ -213,6 +213,9 @@ void AMC::InitData()
     /* Init housekeeping message. */
     CFE_SB_InitMsg(&HkTlm,
                    AMC_HK_TLM_MID, sizeof(HkTlm), TRUE);
+
+    memset(&CVT.ActuatorArmed, 0, sizeof(CVT.ActuatorArmed));
+    memset(&CVT.ActuatorControls0, 0, sizeof(CVT.ActuatorControls0));
 }
 
 
@@ -328,11 +331,13 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case PX4_ACTUATOR_ARMED_MID:
                 memcpy(&CVT.ActuatorArmed, MsgPtr, sizeof(CVT.ActuatorArmed));
-
+            	//DisplayInputs();
+                UpdateMotors();
                 break;
 
             case PX4_ACTUATOR_CONTROLS_0_MID:
                 memcpy(&CVT.ActuatorControls0, MsgPtr, sizeof(CVT.ActuatorControls0));
+            	//DisplayInputs();
                 UpdateMotors();
                 break;
 
@@ -614,20 +619,6 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
-//    CVT.ActuatorArmed.Armed = true;
-//    CVT.ActuatorArmed.Lockdown = false;
-//    CVT.ActuatorArmed.ForceFailsafe = false;
-//    CVT.ActuatorControls0.Timestamp = 13329873;
-//    CVT.ActuatorControls0.SampleTime = 13327382;
-//    CVT.ActuatorControls0.Control[0] = -0.009131;
-//    CVT.ActuatorControls0.Control[1] = 0.003396;
-//    CVT.ActuatorControls0.Control[2] = 0.006336;
-//    CVT.ActuatorControls0.Control[3] = 0.393885;
-//    CVT.ActuatorControls0.Control[4] = 0.000000;
-//    CVT.ActuatorControls0.Control[5] = 0.000000;
-//    CVT.ActuatorControls0.Control[6] = 0.000000;
-//    CVT.ActuatorControls0.Control[7] = -1.000000;
-
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
         disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
         min_pwm[i] = PwmConfigTblPtr->PwmMin;
@@ -651,7 +642,8 @@ void AMC::UpdateMotors(void)
 		/* Disable unused ports by setting their output to NaN */
 		for (size_t i = ActuatorOutputs.Count;
 			 i < sizeof(ActuatorOutputs.Output) / sizeof(ActuatorOutputs.Output[0]);
-			 i++) {
+			 i++)
+		{
 			ActuatorOutputs.Output[i] = NAN;
 		}
 
@@ -724,6 +716,10 @@ void AMC::UpdateMotors(void)
 		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
 		CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
     }
+    else
+    {
+        SetMotorOutputs(disarmed_pwm);
+    }
 }
 
 
@@ -753,6 +749,24 @@ int32 AMC::ControlCallback(
     }
 
     return iStatus;
+}
+
+void AMC::DisplayInputs(void)
+{
+	OS_printf("AMC Inputs ***************\n");
+	OS_printf("  ActuatorArmed.Timestamp:            %llu\n", CVT.ActuatorArmed.Timestamp);
+	OS_printf("  ActuatorArmed.Armed:                %u\n", CVT.ActuatorArmed.Armed);
+	OS_printf("  ActuatorArmed.Prearmed:             %u\n", CVT.ActuatorArmed.Prearmed);
+	OS_printf("  ActuatorArmed.ReadyToArm:           %u\n", CVT.ActuatorArmed.ReadyToArm);
+	OS_printf("  ActuatorArmed.Lockdown:             %u\n", CVT.ActuatorArmed.Lockdown);
+	OS_printf("  ActuatorArmed.ForceFailsafe:        %u\n", CVT.ActuatorArmed.ForceFailsafe);
+	OS_printf("  ActuatorArmed.InEscCalibrationMode: %u\n", CVT.ActuatorArmed.InEscCalibrationMode);
+	OS_printf("  ActuatorControls0.Timestamp:        %llu\n", CVT.ActuatorControls0.Timestamp);
+	OS_printf("  ActuatorControls0.SampleTime:       %llu\n", CVT.ActuatorControls0.SampleTime);
+	for(uint32 i = 0; i < 8; ++i)
+	{
+		OS_printf("  ActuatorControls0.Control[%u]:  %f\n", i, (double)CVT.ActuatorControls0.Control[i]);
+	}
 }
 
 #ifdef __cplusplus

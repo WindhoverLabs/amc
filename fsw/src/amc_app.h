@@ -482,6 +482,8 @@ public:
         uint8 ControlGroup,
         uint8 ControlIndex,
         float &Control);
+
+    void DisplayInputs(void);
 };
 
 #ifdef __cplusplus
