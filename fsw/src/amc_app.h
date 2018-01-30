@@ -126,6 +126,8 @@ public:
     //MIXER_Data_t  MixerData;
     PwmLimit_Data_t PwmLimit;
 
+    int32 PwnConfigMutex;
+
     /************************************************************************/
     /** \brief CFS PWM Motor Controller Task (AMC) application entry point
      **
@@ -484,6 +486,9 @@ public:
         float &Control);
 
     void DisplayInputs(void);
+
+    int32 InitParams(void);
+
 };
 
 #ifdef __cplusplus

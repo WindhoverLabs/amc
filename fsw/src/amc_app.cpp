@@ -764,6 +764,26 @@ void AMC::DisplayInputs(void)
 	}
 }
 
+// params stuff
+
+int32 AMC::InitParams()
+{
+    int32 iStatus = -1;
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+//	PwmConfigTblPtr->PwmDisarmed = ;
+//	PwmConfigTblPtr->PwmMin = ;
+//	PwmConfigTblPtr->PwmMax = ;
+
+    /* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+    return iStatus;
+}
+
+
 #ifdef __cplusplus
 }
 #endif
