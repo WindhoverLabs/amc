@@ -53,6 +53,8 @@ extern "C" {
 #include "amc_version.h"
 #include <math.h>
 #include "lib/px4lib.h"
+#include "prm_lib.h"
+#include "prm_ids.h"
 
 /* TODO:  Delete this when the PWM is no longer simulated on the PX4 side. */
 #define PWM_SIM_DISARMED_MAGIC (900)
@@ -273,6 +275,15 @@ int32 AMC::InitApp()
                                  (unsigned int)iStatus);
         goto AMC_InitApp_Exit_Tag;
     }
+
+    iStatus = InitParams();
+	if (iStatus != CFE_SUCCESS)
+	{
+		(void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to init params (0x%08x)",
+								 (unsigned int)iStatus);
+		goto AMC_InitApp_Exit_Tag;
+	}
 
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
@@ -768,14 +779,19 @@ void AMC::DisplayInputs(void)
 
 int32 AMC::InitParams()
 {
-    int32 iStatus = -1;
+    int32 iStatus = 0;
+    PRMLIB_ParamData_t param = {0};
 
 	/* Lock the mutex */
 	OS_MutSemTake(PwnConfigMutex);
 
-//	PwmConfigTblPtr->PwmDisarmed = ;
-//	PwmConfigTblPtr->PwmMin = ;
-//	PwmConfigTblPtr->PwmMax = ;
+	PwmConfigTblPtr->PwmDisarmed = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_DISARMED, PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
+	PwmConfigTblPtr->PwmMin = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MIN, PwmConfigTblPtr->PwmMin, TYPE_UINT32);
+	PwmConfigTblPtr->PwmMax = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MAX, PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+
+	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
+	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
+	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
