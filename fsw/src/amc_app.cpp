@@ -861,9 +861,9 @@ int32 AMC::InitParams()
 	/* Lock the mutex */
 	OS_MutSemTake(PwnConfigMutex);
 
-	PwmConfigTblPtr->PwmDisarmed = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_DISARMED, PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
-	PwmConfigTblPtr->PwmMin = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MIN, PwmConfigTblPtr->PwmMin, TYPE_UINT32);
-	PwmConfigTblPtr->PwmMax = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MAX, PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+//	PwmConfigTblPtr->PwmDisarmed = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_DISARMED, PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
+//	PwmConfigTblPtr->PwmMin = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MIN, PwmConfigTblPtr->PwmMin, TYPE_UINT32);
+//	PwmConfigTblPtr->PwmMax = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MAX, PwmConfigTblPtr->PwmMax, TYPE_UINT32);
 
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
