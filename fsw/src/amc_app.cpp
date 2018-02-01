@@ -861,10 +861,23 @@ int32 AMC::InitParams()
 	/* Lock the mutex */
 	OS_MutSemTake(PwnConfigMutex);
 
-//	PwmConfigTblPtr->PwmDisarmed = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_DISARMED, PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
-//	PwmConfigTblPtr->PwmMin = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MIN, PwmConfigTblPtr->PwmMin, TYPE_UINT32);
-//	PwmConfigTblPtr->PwmMax = PRMLIB_ParamRegister_uint32(PARAM_ID_PWM_MAX, PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+	OS_printf("default\n");
+	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
+	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
+	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
 
+	PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
+	PRMLIB_ParamRegister(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin, TYPE_UINT32);
+	PRMLIB_ParamRegister(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+
+//	PRMLIB_GetParamById(PARAM_ID_PWM_DISARMED, &param);
+//	PRMLIB_PrintParam(param);
+//	PRMLIB_GetParamById(PARAM_ID_PWM_MIN, &param);
+//	PRMLIB_PrintParam(param);
+//	PRMLIB_GetParamById(PARAM_ID_PWM_MAX, &param);
+//	PRMLIB_PrintParam(param);
+
+	OS_printf("post register\n");
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
@@ -889,10 +902,16 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	/* Lock the mutex */
 	OS_MutSemTake(PwnConfigMutex);
 
-	PwmConfigTblPtr->PwmDisarmed = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_DISARMED);
-	PwmConfigTblPtr->PwmMin = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_MIN);
-	PwmConfigTblPtr->PwmMax = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_MAX);
+	OS_printf("pre update\n");
+	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
+	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
+	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
 
+	PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
+	PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
+	PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
+
+	OS_printf("post update\n");
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
