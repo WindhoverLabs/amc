@@ -866,9 +866,27 @@ int32 AMC::InitParams()
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
 
+	OS_printf("TEST_UINT8: %u\n", PwmConfigTblPtr->test_uint8);
+	OS_printf("TEST_INT8: %u\n", PwmConfigTblPtr->test_int8);
+	OS_printf("TEST_UINT16: %u\n", PwmConfigTblPtr->test_uint16);
+	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
+	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
+	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
+	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+
+
 	PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
 	PRMLIB_ParamRegister(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin, TYPE_UINT32);
 	PRMLIB_ParamRegister(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+
+	PRMLIB_ParamRegister(PARAM_ID_TEST_UINT8, &PwmConfigTblPtr->test_uint8, TYPE_UINT8);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_INT8, &PwmConfigTblPtr->test_int8, TYPE_INT8);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_UINT16, &PwmConfigTblPtr->test_uint16, TYPE_UINT16);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_INT16, &PwmConfigTblPtr->test_int16, TYPE_INT16);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_UINT32, &PwmConfigTblPtr->test_uint32, TYPE_UINT32);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_INT32, &PwmConfigTblPtr->test_int32, TYPE_INT32);
+	PRMLIB_ParamRegister(PARAM_ID_TEST_FLOAT, &PwmConfigTblPtr->test_float, TYPE_REAL32);
+
 
 //	PRMLIB_GetParamById(PARAM_ID_PWM_DISARMED, &param);
 //	PRMLIB_PrintParam(param);
@@ -881,6 +899,14 @@ int32 AMC::InitParams()
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
+
+	OS_printf("TEST_UINT8: %u\n", PwmConfigTblPtr->test_uint8);
+	OS_printf("TEST_INT8: %u\n", PwmConfigTblPtr->test_int8);
+	OS_printf("TEST_UINT16: %u\n", PwmConfigTblPtr->test_uint16);
+	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
+	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
+	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
+	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
@@ -907,14 +933,38 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
 
+	OS_printf("TEST_UINT8: %u\n", PwmConfigTblPtr->test_uint8);
+	OS_printf("TEST_INT8: %u\n", PwmConfigTblPtr->test_int8);
+	OS_printf("TEST_UINT16: %u\n", PwmConfigTblPtr->test_uint16);
+	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
+	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
+	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
+	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+
 	PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
 	PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
 	PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
+
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT8, &PwmConfigTblPtr->test_uint8);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT8, &PwmConfigTblPtr->test_int8);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT16, &PwmConfigTblPtr->test_uint16);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT16, &PwmConfigTblPtr->test_int16);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT32, &PwmConfigTblPtr->test_uint32);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT32, &PwmConfigTblPtr->test_int32);
+	PRMLIB_GetParamValueById(PARAM_ID_TEST_FLOAT, &PwmConfigTblPtr->test_float);
 
 	OS_printf("post update\n");
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
 	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
+
+	OS_printf("TEST_UINT8: %u\n", PwmConfigTblPtr->test_uint8);
+	OS_printf("TEST_INT8: %u\n", PwmConfigTblPtr->test_int8);
+	OS_printf("TEST_UINT16: %u\n", PwmConfigTblPtr->test_uint16);
+	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
+	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
+	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
+	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
@@ -940,6 +990,43 @@ boolean AMC::VerifyParamDestination(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	}
 
 	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+
+	// TODO: REmove all these
+	if(strcmp(PARAM_ID_TEST_UINT8, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT8, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_UINT16, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT16, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_UINT32, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT32, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_FLOAT, MsgPtr->name) == 0)
 	{
 		ParamOurs = TRUE;
 		goto VerifyParamDestination_Exit_Tag;

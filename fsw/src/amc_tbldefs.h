@@ -75,6 +75,14 @@ typedef struct
 
     /** \brief Motor maximum value for this device. */
     uint32  PwmMax;
+
+    uint8 test_uint8;
+    int8 test_int8;
+    uint16 test_uint16;
+    int16 test_int16;
+    uint32 test_uint32;
+    int32 test_int32;
+    float test_float;
 } AMC_PwmConfigTbl_t;
 
 
