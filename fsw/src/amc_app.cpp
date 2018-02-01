@@ -872,7 +872,7 @@ int32 AMC::InitParams()
 	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
 	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
-	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
 
 	PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
@@ -892,8 +892,6 @@ int32 AMC::InitParams()
 //	PRMLIB_PrintParam(param);
 //	PRMLIB_GetParamById(PARAM_ID_PWM_MIN, &param);
 //	PRMLIB_PrintParam(param);
-//	PRMLIB_GetParamById(PARAM_ID_PWM_MAX, &param);
-//	PRMLIB_PrintParam(param);
 
 	OS_printf("post register\n");
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
@@ -906,7 +904,7 @@ int32 AMC::InitParams()
 	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
 	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
-	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
@@ -939,7 +937,7 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
 	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
-	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
 	PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
 	PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
@@ -964,7 +962,7 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	OS_printf("TEST_INT16: %u\n", PwmConfigTblPtr->test_int16);
 	OS_printf("TEST_UINT32: %u\n", PwmConfigTblPtr->test_uint32);
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
-	OS_printf("TEST_FLOAT: %u\n", PwmConfigTblPtr->test_float);
+	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
     /* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
