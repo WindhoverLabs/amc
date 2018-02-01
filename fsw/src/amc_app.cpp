@@ -196,6 +196,31 @@ int32 AMC::InitPipe()
         goto AMC_InitPipe_Exit_Tag;
     }
 
+    /* Init param pipe and subscribe to messages on the data pipe */
+	iStatus = CFE_SB_CreatePipe(&ParamPipeId,
+								AMC_PARAM_PIPE_DEPTH,
+								AMC_PARAM_PIPE_NAME);
+	if (iStatus == CFE_SUCCESS)
+	{
+		/* Subscribe to data messages */
+		iStatus = CFE_SB_Subscribe(PRMLIB_PARAM_UPDATED_MID, ParamPipeId);
+
+		if (iStatus != CFE_SUCCESS)
+		{
+			(void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+									 "DATA Pipe failed to subscribe to PRMLIB_PARAM_UPDATED_MID. (0x%08X)",
+									 (unsigned int)iStatus);
+			goto AMC_InitPipe_Exit_Tag;
+		}
+	}
+	else
+	{
+		(void) CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to create Data pipe (0x%08X)",
+								 (unsigned int)iStatus);
+		goto AMC_InitPipe_Exit_Tag;
+	}
+
 AMC_InitPipe_Exit_Tag:
     return (iStatus);
 }
@@ -338,6 +363,9 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case AMC_SEND_HK_MID:
                 ReportHousekeeping();
+                // TODO: Move these somewhere more appropriate later
+                ProcessParamPipe();
+                ProcessCmdPipe();
                 break;
 
             case PX4_ACTUATOR_ARMED_MID:
@@ -406,6 +434,54 @@ void AMC::ProcessCmdPipe()
             {
                 case AMC_CMD_MID:
                     ProcessAppCmds(CmdMsgPtr);
+                    break;
+
+                default:
+                    /* Bump the command error counter for an unknown command.
+                     * (This should only occur if it was subscribed to with this
+                     *  pipe, but not handled in this switch-case.) */
+                    HkTlm.usCmdErrCnt++;
+                    (void) CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                                      "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
+                    break;
+            }
+        }
+        else if (iStatus == CFE_SB_NO_MESSAGE)
+        {
+            break;
+        }
+        else
+        {
+            (void) CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                  "CMD pipe read error (0x%08X)", (unsigned int)iStatus);
+            break;
+        }
+    }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process Incoming Data	                                       */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void AMC::ProcessParamPipe()
+{
+    int32 iStatus = CFE_SUCCESS;
+    CFE_SB_Msg_t*   CmdMsgPtr=NULL;
+    CFE_SB_MsgId_t  CmdMsgId;
+
+    /* Process command messages until the pipe is empty */
+    while (1)
+    {
+        iStatus = CFE_SB_RcvMsg(&CmdMsgPtr, ParamPipeId, CFE_SB_POLL);
+        if(iStatus == CFE_SUCCESS)
+        {
+            CmdMsgId = CFE_SB_GetMsgId(CmdMsgPtr);
+            switch (CmdMsgId)
+            {
+                case PRMLIB_PARAM_UPDATED_MID:
+                	ProcessUpdatedParam((PRMLIB_UpdatedParamMsg_t *) CmdMsgPtr);
                     break;
 
                 default:
@@ -797,6 +873,62 @@ int32 AMC::InitParams()
 	OS_MutSemGive(PwnConfigMutex);
 
     return iStatus;
+}
+
+int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
+{
+    int32 iStatus = CFE_SUCCESS;
+    PRMLIB_ParamData_t param = {0};
+
+    /* Check if param updated is ours */
+    if(VerifyParamDestination(MsgPtr) == FALSE)
+    {
+    	goto ProcessUpdatedParam_Exit_Tag;
+    }
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+	PwmConfigTblPtr->PwmDisarmed = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_DISARMED);
+	PwmConfigTblPtr->PwmMin = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_MIN);
+	PwmConfigTblPtr->PwmMax = PRMLIB_GetParamValueById_uint32(PARAM_ID_PWM_MAX);
+
+	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
+	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
+	OS_printf("PwmMax: %u\n", PwmConfigTblPtr->PwmMax);
+
+    /* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+ProcessUpdatedParam_Exit_Tag:
+    return iStatus;
+}
+
+boolean AMC::VerifyParamDestination(PRMLIB_UpdatedParamMsg_t* MsgPtr)
+{
+	boolean ParamOurs = FALSE;
+	OS_printf("name: %s\n", MsgPtr->name);
+	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+
+	if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+
+	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
+	{
+		ParamOurs = TRUE;
+		goto VerifyParamDestination_Exit_Tag;
+	}
+
+VerifyParamDestination_Exit_Tag:
+	OS_printf("paramours: %i\n", ParamOurs);
+	return ParamOurs;
 }
 
 

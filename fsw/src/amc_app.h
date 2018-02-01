@@ -59,6 +59,8 @@ extern "C" {
 #include "amc_tbldefs.h"
 #include "px4_msgs.h"
 #include <pwm_limit/pwm_limit.h>
+#include "prm_lib.h"
+#include "prm_ids.h"
 
 
 /************************************************************************
@@ -92,7 +94,7 @@ public:
     CFE_SB_PipeId_t CmdPipeId;
 
     /** \brief Data Pipe ID */
-    CFE_SB_PipeId_t DataPipeId;
+    CFE_SB_PipeId_t ParamPipeId;
 
     /* Task-related */
 
@@ -487,8 +489,13 @@ public:
 
     void DisplayInputs(void);
 
+    void ProcessParamPipe();
+
     int32 InitParams(void);
 
+    int32 ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr);
+
+    boolean VerifyParamDestination(PRMLIB_UpdatedParamMsg_t* MsgPtr);
 };
 
 #ifdef __cplusplus
