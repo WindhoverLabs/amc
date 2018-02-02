@@ -301,8 +301,6 @@ int32 AMC::InitApp()
         goto AMC_InitApp_Exit_Tag;
     }
 
-<<<<<<< HEAD
-=======
     iStatus = InitParams();
 	if (iStatus != CFE_SUCCESS)
 	{
@@ -312,7 +310,6 @@ int32 AMC::InitApp()
 		goto AMC_InitApp_Exit_Tag;
 	}
 
->>>>>>> WINDEV-66-airliner-mavlink-app
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
     {
@@ -840,26 +837,6 @@ int32 AMC::ControlCallback(
 
     return iStatus;
 }
-<<<<<<< HEAD
-=======
-
-void AMC::DisplayInputs(void)
-{
-	OS_printf("AMC Inputs ***************\n");
-	OS_printf("  ActuatorArmed.Timestamp:            %llu\n", CVT.ActuatorArmed.Timestamp);
-	OS_printf("  ActuatorArmed.Armed:                %u\n", CVT.ActuatorArmed.Armed);
-	OS_printf("  ActuatorArmed.Prearmed:             %u\n", CVT.ActuatorArmed.Prearmed);
-	OS_printf("  ActuatorArmed.ReadyToArm:           %u\n", CVT.ActuatorArmed.ReadyToArm);
-	OS_printf("  ActuatorArmed.Lockdown:             %u\n", CVT.ActuatorArmed.Lockdown);
-	OS_printf("  ActuatorArmed.ForceFailsafe:        %u\n", CVT.ActuatorArmed.ForceFailsafe);
-	OS_printf("  ActuatorArmed.InEscCalibrationMode: %u\n", CVT.ActuatorArmed.InEscCalibrationMode);
-	OS_printf("  ActuatorControls0.Timestamp:        %llu\n", CVT.ActuatorControls0.Timestamp);
-	OS_printf("  ActuatorControls0.SampleTime:       %llu\n", CVT.ActuatorControls0.SampleTime);
-	for(uint32 i = 0; i < 8; ++i)
-	{
-		OS_printf("  ActuatorControls0.Control[%u]:  %f\n", i, (double)CVT.ActuatorControls0.Control[i]);
-	}
-}
 
 int32 AMC::InitParams()
 {
@@ -867,7 +844,7 @@ int32 AMC::InitParams()
     PRMLIB_ParamData_t param = {0};
 
 	/* Lock the mutex */
-	OS_MutSemTake(PwnConfigMutex);
+	OS_MutSemTake(PwmConfigMutex);
 
 	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
 	if(iStatus != CFE_SUCCESS)
@@ -889,7 +866,7 @@ int32 AMC::InitParams()
 
 InitParams_Exit_Tag:
     /* Unlock the mutex */
-	OS_MutSemGive(PwnConfigMutex);
+	OS_MutSemGive(PwmConfigMutex);
 
     return iStatus;
 }
@@ -899,7 +876,7 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
     int32 iStatus = CFE_SUCCESS;
 
 	/* Lock the mutex */
-	OS_MutSemTake(PwnConfigMutex);
+	OS_MutSemTake(PwmConfigMutex);
 
 	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
 	{
@@ -921,7 +898,7 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 
 ProcessUpdatedParam_Exit_Tag:
 	/* Unlock the mutex */
-	OS_MutSemGive(PwnConfigMutex);
+	OS_MutSemGive(PwmConfigMutex);
 
 	if(iStatus != CFE_SUCCESS)
 	{
@@ -932,7 +909,6 @@ ProcessUpdatedParam_Exit_Tag:
     return iStatus;
 }
 
->>>>>>> WINDEV-66-airliner-mavlink-app
 #ifdef __cplusplus
 }
 #endif

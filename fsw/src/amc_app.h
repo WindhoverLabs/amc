@@ -59,11 +59,8 @@ extern "C" {
 #include "amc_tbldefs.h"
 #include "px4_msgs.h"
 #include <pwm_limit/pwm_limit.h>
-<<<<<<< HEAD
-=======
 #include "prm_lib.h"
 #include "prm_ids.h"
->>>>>>> WINDEV-66-airliner-mavlink-app
 
 
 /************************************************************************
@@ -131,11 +128,8 @@ public:
     //MIXER_Data_t  MixerData;
     PwmLimit_Data_t PwmLimit;
 
-<<<<<<< HEAD
-=======
-    int32 PwnConfigMutex;
+    int32 PwmConfigMutex;
 
->>>>>>> WINDEV-66-airliner-mavlink-app
     /************************************************************************/
     /** \brief CFS PWM Motor Controller Task (AMC) application entry point
      **
