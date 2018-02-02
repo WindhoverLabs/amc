@@ -688,6 +688,11 @@ void AMC::UpdateMotors(void)
 					ActuatorOutputs.Output[i] = PWM_SIM_DISARMED_MAGIC;
 				}
 			}
+			ActuatorOutputs.Output[6] = 1500.0f;
+			ActuatorOutputs.Output[7] = 1500.0f;
+			ActuatorOutputs.Output[8] = 1500.0f;
+			ActuatorOutputs.Output[9] = 1000.0f;
+			ActuatorOutputs.Output[10] = 1000.0f;
 		}
 
 //		OS_printf("ActuatorOutputs.Count = %u (11)\n" , ActuatorOutputs.Count);
