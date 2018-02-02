@@ -53,6 +53,8 @@ extern "C" {
 #include "amc_version.h"
 #include <math.h>
 #include "lib/px4lib.h"
+#include "prm_lib.h"
+#include "prm_ids.h"
 
 /* TODO:  Delete this when the PWM is no longer simulated on the PX4 side. */
 #define PWM_SIM_DISARMED_MAGIC (900)
@@ -194,6 +196,31 @@ int32 AMC::InitPipe()
         goto AMC_InitPipe_Exit_Tag;
     }
 
+    /* Init param pipe and subscribe to messages on the data pipe */
+	iStatus = CFE_SB_CreatePipe(&ParamPipeId,
+								AMC_PARAM_PIPE_DEPTH,
+								AMC_PARAM_PIPE_NAME);
+	if (iStatus == CFE_SUCCESS)
+	{
+		/* Subscribe to data messages */
+		iStatus = CFE_SB_Subscribe(PRMLIB_PARAM_UPDATED_MID, ParamPipeId);
+
+		if (iStatus != CFE_SUCCESS)
+		{
+			(void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+									 "DATA Pipe failed to subscribe to PRMLIB_PARAM_UPDATED_MID. (0x%08X)",
+									 (unsigned int)iStatus);
+			goto AMC_InitPipe_Exit_Tag;
+		}
+	}
+	else
+	{
+		(void) CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to create Data pipe (0x%08X)",
+								 (unsigned int)iStatus);
+		goto AMC_InitPipe_Exit_Tag;
+	}
+
 AMC_InitPipe_Exit_Tag:
     return (iStatus);
 }
@@ -274,6 +301,18 @@ int32 AMC::InitApp()
         goto AMC_InitApp_Exit_Tag;
     }
 
+<<<<<<< HEAD
+=======
+    iStatus = InitParams();
+	if (iStatus != CFE_SUCCESS)
+	{
+		(void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to init params (0x%08x)",
+								 (unsigned int)iStatus);
+		goto AMC_InitApp_Exit_Tag;
+	}
+
+>>>>>>> WINDEV-66-airliner-mavlink-app
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
     {
@@ -327,6 +366,9 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case AMC_SEND_HK_MID:
                 ReportHousekeeping();
+                // TODO: Move these somewhere more appropriate later
+                ProcessParamPipe();
+                ProcessCmdPipe();
                 break;
 
             case PX4_ACTUATOR_ARMED_MID:
@@ -395,6 +437,54 @@ void AMC::ProcessCmdPipe()
             {
                 case AMC_CMD_MID:
                     ProcessAppCmds(CmdMsgPtr);
+                    break;
+
+                default:
+                    /* Bump the command error counter for an unknown command.
+                     * (This should only occur if it was subscribed to with this
+                     *  pipe, but not handled in this switch-case.) */
+                    HkTlm.usCmdErrCnt++;
+                    (void) CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                                      "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
+                    break;
+            }
+        }
+        else if (iStatus == CFE_SB_NO_MESSAGE)
+        {
+            break;
+        }
+        else
+        {
+            (void) CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                  "CMD pipe read error (0x%08X)", (unsigned int)iStatus);
+            break;
+        }
+    }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process Incoming Data	                                       */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void AMC::ProcessParamPipe()
+{
+    int32 iStatus = CFE_SUCCESS;
+    CFE_SB_Msg_t*   CmdMsgPtr=NULL;
+    CFE_SB_MsgId_t  CmdMsgId;
+
+    /* Process command messages until the pipe is empty */
+    while (1)
+    {
+        iStatus = CFE_SB_RcvMsg(&CmdMsgPtr, ParamPipeId, CFE_SB_POLL);
+        if(iStatus == CFE_SUCCESS)
+        {
+            CmdMsgId = CFE_SB_GetMsgId(CmdMsgPtr);
+            switch (CmdMsgId)
+            {
+                case PRMLIB_PARAM_UPDATED_MID:
+                	ProcessUpdatedParam((PRMLIB_UpdatedParamMsg_t *) CmdMsgPtr);
                     break;
 
                 default:
@@ -750,6 +840,99 @@ int32 AMC::ControlCallback(
 
     return iStatus;
 }
+<<<<<<< HEAD
+=======
+
+void AMC::DisplayInputs(void)
+{
+	OS_printf("AMC Inputs ***************\n");
+	OS_printf("  ActuatorArmed.Timestamp:            %llu\n", CVT.ActuatorArmed.Timestamp);
+	OS_printf("  ActuatorArmed.Armed:                %u\n", CVT.ActuatorArmed.Armed);
+	OS_printf("  ActuatorArmed.Prearmed:             %u\n", CVT.ActuatorArmed.Prearmed);
+	OS_printf("  ActuatorArmed.ReadyToArm:           %u\n", CVT.ActuatorArmed.ReadyToArm);
+	OS_printf("  ActuatorArmed.Lockdown:             %u\n", CVT.ActuatorArmed.Lockdown);
+	OS_printf("  ActuatorArmed.ForceFailsafe:        %u\n", CVT.ActuatorArmed.ForceFailsafe);
+	OS_printf("  ActuatorArmed.InEscCalibrationMode: %u\n", CVT.ActuatorArmed.InEscCalibrationMode);
+	OS_printf("  ActuatorControls0.Timestamp:        %llu\n", CVT.ActuatorControls0.Timestamp);
+	OS_printf("  ActuatorControls0.SampleTime:       %llu\n", CVT.ActuatorControls0.SampleTime);
+	for(uint32 i = 0; i < 8; ++i)
+	{
+		OS_printf("  ActuatorControls0.Control[%u]:  %f\n", i, (double)CVT.ActuatorControls0.Control[i]);
+	}
+}
+
+int32 AMC::InitParams()
+{
+    int32 iStatus = -1;
+    PRMLIB_ParamData_t param = {0};
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
+	if(iStatus != CFE_SUCCESS)
+	{
+		goto InitParams_Exit_Tag;
+	}
+
+	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin, TYPE_UINT32);
+	if(iStatus != CFE_SUCCESS)
+	{
+		goto InitParams_Exit_Tag;
+	}
+
+	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+	if(iStatus != CFE_SUCCESS)
+	{
+		goto InitParams_Exit_Tag;
+	}
+
+InitParams_Exit_Tag:
+    /* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+    return iStatus;
+}
+
+int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
+{
+    int32 iStatus = CFE_SUCCESS;
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
+	{
+		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+	if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
+	{
+		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
+	{
+		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+ProcessUpdatedParam_Exit_Tag:
+	/* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+	if(iStatus != CFE_SUCCESS)
+	{
+		(void) CFE_EVS_SendEvent(AMC_PARAM_UPDATE_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to update parameter: %s", MsgPtr->name);
+	}
+
+    return iStatus;
+}
+
+>>>>>>> WINDEV-66-airliner-mavlink-app
 #ifdef __cplusplus
 }
 #endif

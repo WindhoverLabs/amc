@@ -59,6 +59,11 @@ extern "C" {
 #include "amc_tbldefs.h"
 #include "px4_msgs.h"
 #include <pwm_limit/pwm_limit.h>
+<<<<<<< HEAD
+=======
+#include "prm_lib.h"
+#include "prm_ids.h"
+>>>>>>> WINDEV-66-airliner-mavlink-app
 
 
 /************************************************************************
@@ -92,7 +97,7 @@ public:
     CFE_SB_PipeId_t CmdPipeId;
 
     /** \brief Data Pipe ID */
-    CFE_SB_PipeId_t DataPipeId;
+    CFE_SB_PipeId_t ParamPipeId;
 
     /* Task-related */
 
@@ -126,6 +131,11 @@ public:
     //MIXER_Data_t  MixerData;
     PwmLimit_Data_t PwmLimit;
 
+<<<<<<< HEAD
+=======
+    int32 PwnConfigMutex;
+
+>>>>>>> WINDEV-66-airliner-mavlink-app
     /************************************************************************/
     /** \brief CFS PWM Motor Controller Task (AMC) application entry point
      **
@@ -482,6 +492,47 @@ public:
         uint8 ControlGroup,
         uint8 ControlIndex,
         float &Control);
+
+    void DisplayInputs(void);
+
+    void ProcessParamPipe();
+
+    /************************************************************************/
+	/** \brief Initialize parameters
+	**
+	**  \par Description
+	**       This function is called by InitApp and registers all of this
+	**       applications parameters with the param library.
+	**
+	**  \par Assumptions, External Events, and Notes:
+	**       None
+	**
+	**  \returns
+	**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
+	**  \retcode -1  \retdesc Failed to register  \endcode
+	**  \endreturns
+	**
+	*************************************************************************/
+    int32 InitParams(void);
+
+    /************************************************************************/
+	/** \brief Process an Update Parameter Message
+	**
+	**  \par Description
+	**       This function is event driven by the #PRMLIB_PARAM_UPDATED_MID
+	**       message. It checks if the updated param is one of its own and
+	**       updates it if so.
+	**
+	**  \par Assumptions, External Events, and Notes:
+	**       None
+	**
+	**  \returns
+	**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
+	**  \retcode -1  \retdesc Failed to update a parameter  \endcode
+	**  \endreturns
+	**
+	*************************************************************************/
+    int32 ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr);
 };
 
 #ifdef __cplusplus

@@ -425,6 +425,19 @@ typedef enum {
 */
     AMC_MIXER_TBLVAL_NONZER_DATA_ERR_EID,
 
+/** \brief <tt> '' </tt>
+**  \event <tt> '' </tt>
+**
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when a #PRMLIB_PARAM_UPDATED_MID
+**  message is received with one of this applications params and
+**  an error is encountered getting the updated value.
+*/
+	AMC_PARAM_UPDATE_ERR_EID,
+
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
     AMC_EVT_CNT
 } AMC_EventIds_t;
