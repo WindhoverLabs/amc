@@ -628,7 +628,7 @@ void AMC::UpdateMotors(void)
     /* Never actuate any motors unless the system is armed.  Check to see if
      * its armed, or in lock down before continuing
      */
-    if (CVT.ActuatorArmed.Lockdown)
+    if (CVT.ActuatorArmed.Lockdown || CVT.ActuatorArmed.ManualLockdown)
     {
         SetMotorOutputs(disarmed_pwm);
     }
@@ -670,7 +670,7 @@ void AMC::UpdateMotors(void)
 		 * to be -1.0 to 1.0, which it is until the following step.  The problem
 		 * is the sim expects 1000.0 - 2000.0. */
 		{
-			for (unsigned i = 0; i < ActuatorOutputs.Count; i++) {
+			for (unsigned i = 0; i < PX4_ACTUATOR_OUTPUTS_MAX; i++) {
 				/* last resort: catch NaN, INF and out-of-band errors */
 				if (i < ActuatorOutputs.Count &&
 					isfinite(ActuatorOutputs.Output[i]) &&
