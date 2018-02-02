@@ -130,25 +130,25 @@ int32 AMC::ValidatePwmCfgTbl(void* ConfigTblPtr)
     int32  iStatus=0;
     AMC_PwmConfigTbl_t* AMC_PwmConfigTblPtr = (AMC_PwmConfigTbl_t*)(ConfigTblPtr);
 
-//    if(AMC_PwmConfigTblPtr->PwmMin < AMC_PwmConfigTblPtr->PwmDisarmed)
-//    {
-//        (void) CFE_EVS_SendEvent(AMC_PWM_CFGTBL_MIN_LT_DISARMED_ERR_EID, CFE_EVS_ERROR,
-//            "PWM Tbl Vldt: Min (%u) less than Disarmed (%u) speed.",
-//            (unsigned int)AMC_PwmConfigTblPtr->PwmMin,
-//            (unsigned int)AMC_PwmConfigTblPtr->PwmDisarmed);
-//        iStatus = -1;
-//        goto AMC_ValidatePwmCfgTbl_Exit_Tag;
-//    }
-//
-//    if(AMC_PwmConfigTblPtr->PwmMax < AMC_PwmConfigTblPtr->PwmMin)
-//    {
-//        (void) CFE_EVS_SendEvent(AMC_PWM_CFGTBL_MAX_LT_MIN_ERR_EID, CFE_EVS_ERROR,
-//            "PWM Tbl Vldt: Max (%u) less than Min (%u) speed.",
-//            (unsigned int)AMC_PwmConfigTblPtr->PwmMax,
-//            (unsigned int)AMC_PwmConfigTblPtr->PwmMin);
-//        iStatus = -1;
-//        goto AMC_ValidatePwmCfgTbl_Exit_Tag;
-//    }
+    if(AMC_PwmConfigTblPtr->PwmMin < AMC_PwmConfigTblPtr->PwmDisarmed)
+    {
+        (void) CFE_EVS_SendEvent(AMC_PWM_CFGTBL_MIN_LT_DISARMED_ERR_EID, CFE_EVS_ERROR,
+            "PWM Tbl Vldt: Min (%u) less than Disarmed (%u) speed.",
+            (unsigned int)AMC_PwmConfigTblPtr->PwmMin,
+            (unsigned int)AMC_PwmConfigTblPtr->PwmDisarmed);
+        iStatus = -1;
+        goto AMC_ValidatePwmCfgTbl_Exit_Tag;
+    }
+
+    if(AMC_PwmConfigTblPtr->PwmMax < AMC_PwmConfigTblPtr->PwmMin)
+    {
+        (void) CFE_EVS_SendEvent(AMC_PWM_CFGTBL_MAX_LT_MIN_ERR_EID, CFE_EVS_ERROR,
+            "PWM Tbl Vldt: Max (%u) less than Min (%u) speed.",
+            (unsigned int)AMC_PwmConfigTblPtr->PwmMax,
+            (unsigned int)AMC_PwmConfigTblPtr->PwmMin);
+        iStatus = -1;
+        goto AMC_ValidatePwmCfgTbl_Exit_Tag;
+    }
 
 AMC_ValidatePwmCfgTbl_Exit_Tag:
     return (iStatus);
