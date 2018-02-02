@@ -918,10 +918,6 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
     PRMLIB_ParamData_t param = {0};
 
     /* Check if param updated is ours */
-    if(VerifyParamDestination(MsgPtr) == FALSE)
-    {
-    	goto ProcessUpdatedParam_Exit_Tag;
-    }
 
 	/* Lock the mutex */
 	OS_MutSemTake(PwnConfigMutex);
@@ -939,18 +935,65 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
 	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
-	PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
-	PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
-	PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
 
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT8, &PwmConfigTblPtr->test_uint8);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT8, &PwmConfigTblPtr->test_int8);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT16, &PwmConfigTblPtr->test_uint16);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT16, &PwmConfigTblPtr->test_int16);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT32, &PwmConfigTblPtr->test_uint32);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_INT32, &PwmConfigTblPtr->test_int32);
-	PRMLIB_GetParamValueById(PARAM_ID_TEST_FLOAT, &PwmConfigTblPtr->test_float);
+	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
 
+	if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+	// TODO: REmove all these
+	if(strcmp(PARAM_ID_TEST_UINT8, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT8, &PwmConfigTblPtr->test_uint8);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT8, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_INT8, &PwmConfigTblPtr->test_int8);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_UINT16, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT16, &PwmConfigTblPtr->test_uint16);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT16, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_INT16, &PwmConfigTblPtr->test_int16);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_UINT32, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_UINT32, &PwmConfigTblPtr->test_uint32);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_INT32, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_INT32, &PwmConfigTblPtr->test_int32);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+	if(strcmp(PARAM_ID_TEST_FLOAT, MsgPtr->name) == 0)
+	{
+		PRMLIB_GetParamValueById(PARAM_ID_TEST_FLOAT, &PwmConfigTblPtr->test_float);
+		goto ProcessUpdatedParam_Exit_Tag;
+	}
+
+
+
+ProcessUpdatedParam_Exit_Tag:
 	OS_printf("post update\n");
 	OS_printf("PwmDisarmed: %u\n", PwmConfigTblPtr->PwmDisarmed);
 	OS_printf("PwmMin: %u\n", PwmConfigTblPtr->PwmMin);
@@ -964,77 +1007,11 @@ int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 	OS_printf("TEST_INT32: %u\n", PwmConfigTblPtr->test_int32);
 	OS_printf("TEST_FLOAT: %f\n", PwmConfigTblPtr->test_float);
 
-    /* Unlock the mutex */
+	/* Unlock the mutex */
 	OS_MutSemGive(PwnConfigMutex);
 
-ProcessUpdatedParam_Exit_Tag:
     return iStatus;
 }
-
-boolean AMC::VerifyParamDestination(PRMLIB_UpdatedParamMsg_t* MsgPtr)
-{
-	boolean ParamOurs = FALSE;
-	OS_printf("name: %s\n", MsgPtr->name);
-	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-
-	if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-
-	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-
-	// TODO: REmove all these
-	if(strcmp(PARAM_ID_TEST_UINT8, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_INT8, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_UINT16, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_INT16, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_UINT32, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_INT32, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-	if(strcmp(PARAM_ID_TEST_FLOAT, MsgPtr->name) == 0)
-	{
-		ParamOurs = TRUE;
-		goto VerifyParamDestination_Exit_Tag;
-	}
-
-VerifyParamDestination_Exit_Tag:
-	OS_printf("paramours: %i\n", ParamOurs);
-	return ParamOurs;
-}
-
 
 #ifdef __cplusplus
 }

@@ -495,7 +495,6 @@ public:
 
     int32 ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr);
 
-    boolean VerifyParamDestination(PRMLIB_UpdatedParamMsg_t* MsgPtr);
 };
 
 #ifdef __cplusplus
