@@ -274,6 +274,15 @@ int32 AMC::InitApp()
         goto AMC_InitApp_Exit_Tag;
     }
 
+    iStatus = InitParams();
+    if (iStatus != CFE_SUCCESS)
+	{
+		(void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+								 "Failed to init params (0x%08x)",
+								 (unsigned int)iStatus);
+		goto AMC_InitApp_Exit_Tag;
+	}
+
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
     {
@@ -598,7 +607,7 @@ void AMC::StopMotors(void)
     uint16 disarmed_pwm[AMC_MAX_MOTOR_OUTPUTS];
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+        //disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
     }
 
     SetMotorOutputs(disarmed_pwm);
@@ -620,9 +629,9 @@ void AMC::UpdateMotors(void)
     PX4_ActuatorOutputsMsg_t outputs;
 
     for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
-        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
-        min_pwm[i] = PwmConfigTblPtr->PwmMin;
-        max_pwm[i] = PwmConfigTblPtr->PwmMax;
+//        disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
+//        min_pwm[i] = PwmConfigTblPtr->PwmMin;
+//        max_pwm[i] = PwmConfigTblPtr->PwmMax;
     }
 
     /* Never actuate any motors unless the system is armed.  Check to see if
@@ -746,23 +755,54 @@ int32 AMC::ControlCallback(
     return iStatus;
 }
 
-void AMC::DisplayInputs(void)
+// params stuff
+
+int32 AMC::InitParams()
 {
-	OS_printf("AMC Inputs ***************\n");
-	OS_printf("  ActuatorArmed.Timestamp:            %llu\n", CVT.ActuatorArmed.Timestamp);
-	OS_printf("  ActuatorArmed.Armed:                %u\n", CVT.ActuatorArmed.Armed);
-	OS_printf("  ActuatorArmed.Prearmed:             %u\n", CVT.ActuatorArmed.Prearmed);
-	OS_printf("  ActuatorArmed.ReadyToArm:           %u\n", CVT.ActuatorArmed.ReadyToArm);
-	OS_printf("  ActuatorArmed.Lockdown:             %u\n", CVT.ActuatorArmed.Lockdown);
-	OS_printf("  ActuatorArmed.ForceFailsafe:        %u\n", CVT.ActuatorArmed.ForceFailsafe);
-	OS_printf("  ActuatorArmed.InEscCalibrationMode: %u\n", CVT.ActuatorArmed.InEscCalibrationMode);
-	OS_printf("  ActuatorControls0.Timestamp:        %llu\n", CVT.ActuatorControls0.Timestamp);
-	OS_printf("  ActuatorControls0.SampleTime:       %llu\n", CVT.ActuatorControls0.SampleTime);
-	for(uint32 i = 0; i < 8; ++i)
-	{
-		OS_printf("  ActuatorControls0.Control[%u]:  %f\n", i, (double)CVT.ActuatorControls0.Control[i]);
-	}
+    int32 iStatus = -1;
+    uint16 				ParamCount = 0;
+	uint16 				ParamIndex = 0;
+	PRMLIB_ParamData_t  param;
+
+	/* Lock the mutex */
+	OS_MutSemTake(PwnConfigMutex);
+
+    // Iterate over local param list
+    for(int i = 0; i < AMC_MAX_PARAMS; ++i)
+    {
+    	//PRMLIB_PrintParam(PwmConfigTblPtr->param[i]);
+    	strcpy(param.name, PwmConfigTblPtr->param[i].name);
+    	param.vehicle_id = PwmConfigTblPtr->param[i].vehicle_id;
+    	param.component_id = PwmConfigTblPtr->param[i].component_id;
+
+    	// If the param exists in the lib then update local value with lib
+    	if(PRMLIB_ParamExists(param) == TRUE)
+    	{
+    		OS_printf("Param exists\n");
+
+    		//PRMLIB_PrintParam(param);
+    		iStatus = PRMLIB_GetParamData(&param, &ParamIndex, &ParamCount);
+    		PRMLIB_CopyParamData(PwmConfigTblPtr->param[i], param);
+    	}
+    	else
+    	{
+    		OS_printf("adding param\n");
+    		iStatus = PRMLIB_AddParam(PwmConfigTblPtr->param[i]);
+    	}
+
+    	if(iStatus != CFE_SUCCESS)
+    	{
+    		OS_printf("fail\n");
+    		break;
+    	}
+    }
+
+    /* Unlock the mutex */
+	OS_MutSemGive(PwnConfigMutex);
+
+    return iStatus;
 }
+
 
 #ifdef __cplusplus
 }

@@ -59,6 +59,7 @@ extern "C" {
 #include "amc_tbldefs.h"
 #include "px4_msgs.h"
 #include <pwm_limit/pwm_limit.h>
+#include "prm_lib.h"
 
 
 /************************************************************************
@@ -125,6 +126,8 @@ public:
 
     //MIXER_Data_t  MixerData;
     PwmLimit_Data_t PwmLimit;
+
+    uint32 PwnConfigMutex;
 
     /************************************************************************/
     /** \brief CFS PWM Motor Controller Task (AMC) application entry point
@@ -483,7 +486,7 @@ public:
         uint8 ControlIndex,
         float &Control);
 
-    void DisplayInputs(void);
+    int32  InitParams(void);
 };
 
 #ifdef __cplusplus

@@ -47,6 +47,7 @@ extern "C" {
 
 #include "cfe.h"
 #include "amc_platform_cfg.h"
+#include "prm_lib.h"
 
 /************************************************************************
 ** Local Defines
@@ -67,14 +68,8 @@ extern "C" {
 /** \brief Definition for a single config table entry */
 typedef struct
 {
-    /** \brief Motor disarmed value for this device. */
-    uint32  PwmDisarmed;
-
-    /** \brief Motor minimum value for this device.  Keep this high enough to overcome stiction but low enough not to cause lift.*/
-    uint32  PwmMin;
-
-    /** \brief Motor maximum value for this device. */
-    uint32  PwmMax;
+    /** \brief  */
+	PRMLIB_ParamData_t param[AMC_MAX_PARAMS];
 } AMC_PwmConfigTbl_t;
 
 
