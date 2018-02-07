@@ -31,33 +31,56 @@
 *
 *****************************************************************************/
 
+#ifndef MIXER_TABLES_H
+#define MIXER_TABLES_H
 
 #include "cfe.h"
 
-void        Ut_CFE_ES_ClearSysLogQueue(void);
-uint32      Ut_CFE_EVS_GetEventQueueDepth(void);
-int32       Ut_CFE_ES_RunLoopHook(uint32 *ExitStatus);
-int32       Ut_CFE_ES_WriteToSysLog(const char *SysLogEntryText);
-boolean     Ut_CFE_ES_SysLogWritten(const char *ExpectedSysLogEntryText);
-uint32      Ut_CFE_ES_GetSysLogQueueDepth(void);
+#define MULTIROTOR_MIXER_MAX_ROTOR_COUNT 8
 
-
-
-
-int32  Ut_SetConfigTablePtr(MultirotorMixer_ConfigTablePtr_t &ConfigTablePtr);
-uint32 Ut_mix(float *outputs, uint32 space, uint16 *status_reg);
-uint16 Ut_get_saturation_status(void);
-void   Ut_groups_required(uint32 &groups);
-
-uint32 Ut_set_trim(float trim)
+typedef enum
 {
-    return 0;
-}
+    MIXER_QUAD_X,
+    MIXER_QUAD_H,
+    MIXER_QUAD_PLUS,
+    MIXER_QUAD_V,
+    MIXER_QUAD_WIDE,
+    MIXER_QUAD_S250AQ,
+    MIXER_QUAD_DEADCAT,
+    MIXER_HEX_X,
+    MIXER_HEX_PLUS,
+    MIXER_HEX_COX,
+    MIXER_HEX_T,
+    MIXER_OCTA_X,
+    MIXER_OCTA_PLUS,
+    MIXER_OCTA_COX,
+    MIXER_OCTA_COX_WIDE,
+    MIXER_TWIN_ENGINE,
+    MIXER_TRI_Y,
+    MIXER_MAX_GEOMETRY
+} MultirotorGeometry_t;
 
-/**
- * @brief      Sets the thrust factor used to calculate mapping from desired thrust to pwm.
- *
- * @param[in]  val   The value
- */
-virtual void            set_thrust_factor(float val) {m_ThrustFactor = val;}
+typedef struct {
+    float   RollScale; /**< scales roll for this rotor */
+    float   PitchScale;/**< scales pitch for this rotor */
+    float   YawScale;  /**< scales yaw for this rotor */
+    float   OutScale;  /**< scales total out for this rotor */
+} MultirotorMixer_RotorConfig_t;
 
+typedef struct
+{
+    float  RollScale;
+    float  PitchScale;
+    float  YawScale;
+    float  IdleSpeed;
+    float  DeltaOutMax;
+    uint32 RotorCount;
+	MultirotorGeometry_t Geometry;
+    MultirotorMixer_RotorConfig_t RotorConfig[MULTIROTOR_MIXER_MAX_ROTOR_COUNT];
+} MultirotorMixer_ConfigTable_t;
+
+
+typedef MultirotorMixer_ConfigTable_t *MultirotorMixer_ConfigTablePtr_t;
+
+
+#endif

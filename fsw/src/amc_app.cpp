@@ -52,7 +52,7 @@ extern "C" {
 #include "amc_msg.h"
 #include "amc_version.h"
 #include <math.h>
-#include "lib/px4lib.h"
+#include "px4lib.h"
 #include "prm_lib.h"
 #include "prm_ids.h"
 
