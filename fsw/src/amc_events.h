@@ -72,7 +72,7 @@ typedef enum {
 **  The fourth \c %d field contains the application revision number defined
 **      in #AMC_MISSION_REV.
 */
-    AMC_INIT_INF_EID,
+    AMC_INIT_INF_EID = 1,
 
 /** \brief <tt> 'PWM Tbl Vldt: Min (\%u) less than Disarmed (\%u) speed.' </tt>
 **  \event <tt> 'PWM Tbl Vldt: Min (\%u) less than Disarmed (\%u) speed.' </tt>
@@ -85,7 +85,7 @@ typedef enum {
 **  The second \c %d field contains the 'Disarmed' value defined in the table.
 **
 */
-    AMC_PWM_CFGTBL_MIN_LT_DISARMED_ERR_EID,
+    AMC_PWM_CFGTBL_MIN_LT_DISARMED_ERR_EID = 2,
 
 /** \brief <tt> 'PWM Tbl Vldt: Max (\%u) less than Min (\%u) speed.' </tt>
 **  \event <tt> 'PWM Tbl Vldt: Max (\%u) less than Min (\%u) speed.' </tt>
@@ -98,7 +98,7 @@ typedef enum {
 **  The second \c %d field contains the 'Minimum' value defined in the table.
 **
 */
-    AMC_PWM_CFGTBL_MAX_LT_MIN_ERR_EID,
+    AMC_PWM_CFGTBL_MAX_LT_MIN_ERR_EID = 3,
 
 /** \brief <tt> 'Recvd NOOP. Version \%d.\%d.\%d.\%d' </tt>
 **  \event <tt> 'Recvd NOOP. Version \%d.\%d.\%d.\%d' </tt>
@@ -121,7 +121,7 @@ typedef enum {
 **  The fourth \c %d field contains the application revision number defined
 **      in #AMC_MISSION_REV.
 */
-    AMC_CMD_NOOP_EID,
+    AMC_CMD_NOOP_EID = 4,
 
     /** \brief <tt> '\%s Pipe failed to subscribe to \%s. (0x\%08X)' </tt>
     **  \event <tt> '\%s Pipe failed to subscribe to \%s. (0x\%08X)' </tt>
@@ -138,7 +138,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-    AMC_SUBSCRIBE_ERR_EID,
+    AMC_SUBSCRIBE_ERR_EID = 5,
 
 /** \brief <tt> 'Failed to create \%s pipe (0x\%08X)' </tt>
 **  \event <tt> 'Failed to create \%s pipe (0x\%08X' </tt>
@@ -154,7 +154,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-    AMC_PIPE_INIT_ERR_EID,
+    AMC_PIPE_INIT_ERR_EID = 6,
 
 
 /** \brief <tt> 'Failed to init mixer (0x\%08x)' </tt>
@@ -168,7 +168,7 @@ typedef enum {
 **  configuration table pointer (MulticopterMixer::SetConfigTablePtr)
 **  returns a failure.
 */
-    AMC_MIXER_INIT_ERR_EID,
+    AMC_MIXER_INIT_ERR_EID = 7,
 
 /** \brief <tt> 'Failed to manage PWM Config table (0x\%08X)' </tt>
 **  \event <tt> 'Failed to manage PWM Config table (0x\%08X)' </tt>
@@ -181,7 +181,7 @@ typedef enum {
 **  #CFE_TBL_Manage function.
 **
 */
-    AMC_PWM_CFGTBL_MANAGE_ERR_EID,
+    AMC_PWM_CFGTBL_MANAGE_ERR_EID = 8,
 
 /** \brief <tt> 'Failed to manage Mixer Config table (0x\%08X)' </tt>
 **  \event <tt> 'Failed to manage Mixer Config table (0x\%08X)' </tt>
@@ -194,7 +194,7 @@ typedef enum {
 **  #CFE_TBL_Manage function.
 **
 */
-    AMC_MIXER_CFGTBL_MANAGE_ERR_EID,
+    AMC_MIXER_CFGTBL_MANAGE_ERR_EID = 9,
 
 /** \brief <tt> 'Failed to get PWM Config table's address (0x\%08X)' </tt>
 **  \event <tt> 'Failed to get PWM Config table's address (0x\%08X)' </tt>
@@ -207,7 +207,7 @@ typedef enum {
 **  #CFE_TBL_GetAddress function.
 **
 */
-    AMC_PWM_CFGTBL_GETADDR_ERR_EID,
+    AMC_PWM_CFGTBL_GETADDR_ERR_EID = 10,
 
 /** \brief <tt> 'Failed to get Mixer Config table's address (0x\%08X)' </tt>
 **  \event <tt> 'Failed to get Mixer Config table's address (0x\%08X)' </tt>
@@ -220,7 +220,7 @@ typedef enum {
 **  #CFE_TBL_GetAddress function.
 **
 */
-    AMC_MIXER_CFGTBL_GETADDR_ERR_EID,
+    AMC_MIXER_CFGTBL_GETADDR_ERR_EID = 11,
 
 /** \brief <tt> '\%s pipe read error (0x\%08X).' </tt>
 **  \event <tt> '\%s pipe read error (0x\%08X).' </tt>
@@ -236,7 +236,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-    AMC_RCVMSG_ERR_EID,
+    AMC_RCVMSG_ERR_EID = 12,
 
 /** \brief <tt> 'Recvd invalid \%s msgId (0x\%04X)' </tt>
 **  \event <tt> 'Recvd invalid \%s msgId (0x\%04X)' </tt>
@@ -251,7 +251,7 @@ typedef enum {
 **  The \c %s field contains the name of the pipe.
 **  The 16 bit hexadecimal number is the actual message ID received.
 */
-    AMC_MSGID_ERR_EID,
+    AMC_MSGID_ERR_EID = 13,
 
 /** \brief <tt> 'Recvd invalid command code (\%u)' </tt>
 **  \event <tt> 'Recvd invalid command code (\%u)' </tt>
@@ -265,7 +265,7 @@ typedef enum {
 **
 **  The %u field contains the actual command code received.
 */
-    AMC_CC_ERR_EID,
+    AMC_CC_ERR_EID = 14,
 
 /** \brief <tt> 'Rcvd invalid msgLen: msgId=0x\%08X, cmdCode=\%d, msgLen=\%d, expectedLen=\%d" </tt>
 **  \event <tt> 'Rcvd invalid msgLen: msgId=0x\%08X, cmdCode=\%d, msgLen=\%d, expectedLen=\%d" </tt>
@@ -282,7 +282,7 @@ typedef enum {
 **  The third \c %d field contains the actual length.
 **  The fourth \c %d field contains the expected length.
 */
-    AMC_MSGLEN_ERR_EID,
+    AMC_MSGLEN_ERR_EID = 15,
 
 /** \brief <tt> 'Failed to init device (0x\%08x)" </tt>
 **  \event <tt> 'Failed to init device (0x\%08x)" </tt>
@@ -297,7 +297,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by the
 **  platform specific AMC::InitDevice() function.
 */
-    AMC_DEVICE_INIT_ERR_EID,
+    AMC_DEVICE_INIT_ERR_EID = 16,
 
 /** \brief <tt> 'Failed to register PWM table (0x%08X)' </tt>
 **  \event <tt> 'Failed to register PWM table (0x%08X)' </tt>
@@ -313,7 +313,7 @@ typedef enum {
 **  #CFE_TBL_Register function.
 **
 */
-    AMC_PWM_CFGTBL_REG_ERR_EID,
+    AMC_PWM_CFGTBL_REG_ERR_EID = 17,
 
 /** \brief <tt> 'Failed to register Mixer table (0x%08X)' </tt>
 **  \event <tt> 'Failed to register Mixer table (0x%08X)' </tt>
@@ -329,7 +329,7 @@ typedef enum {
 **  #CFE_TBL_Register function.
 **
 */
-    AMC_MIXER_CFGTBL_REG_ERR_EID,
+    AMC_MIXER_CFGTBL_REG_ERR_EID = 18,
 
 /** \brief <tt> 'Failed to load PWM Config Table (0x%08X)' </tt>
 **  \event <tt> 'Failed to load PWM Config Table (0x%08X)' </tt>
@@ -345,7 +345,7 @@ typedef enum {
 **  #CFE_TBL_Load function.
 **
 */
-    AMC_PWM_CFGTBL_LOAD_ERR_EID,
+    AMC_PWM_CFGTBL_LOAD_ERR_EID = 19,
 
 /** \brief <tt> 'Failed to load Mixer Config Table (0x%08X)' </tt>
 **  \event <tt> 'Failed to load Mixer Config Table (0x%08X)' </tt>
@@ -361,7 +361,7 @@ typedef enum {
 **  #CFE_TBL_Load function.
 **
 */
-    AMC_MIXER_CFGTBL_LOAD_ERR_EID,
+    AMC_MIXER_CFGTBL_LOAD_ERR_EID = 20,
 
 /** \brief <tt> 'Mixer cfg tbl invld.  R[%u] P[%u] Y[%u] I[%u] G[%u] D[%u] RC[%u]' </tt>
 **  \event <tt> 'Mixer cfg tbl invld.  R[%u] P[%u] Y[%u] I[%u] G[%u] D[%u] RC[%u]' </tt>
@@ -386,7 +386,7 @@ typedef enum {
 **
 **  Table validation will stop at the first error.
 */
-    AMC_MIXER_INVALID_MIXER_ERR_EID,
+    AMC_MIXER_INVALID_MIXER_ERR_EID = 21,
 
 /** \brief <tt> 'Mixer cfg tbl invld rotor[%u] config.  R[%u] P[%u] Y[%u] O[%u]' </tt>
 **  \event <tt> 'Mixer cfg tbl invld rotor[%u] config.  R[%u] P[%u] Y[%u] O[%u]' </tt>
@@ -408,7 +408,7 @@ typedef enum {
 **
 **  Table validation will stop at the first error.
 */
-    AMC_MIXER_INVLD_ROTOR_CONFIG_ERR_EID,
+    AMC_MIXER_INVLD_ROTOR_CONFIG_ERR_EID = 22,
 
 /** \brief <tt> 'Mixer cfg tbl contains unused nonzero data.' </tt>
 **  \event <tt> 'Mixer cfg tbl contains unused nonzero data.' </tt>
@@ -423,7 +423,7 @@ typedef enum {
 **
 **  Table validation will stop at the first error.
 */
-    AMC_MIXER_TBLVAL_NONZER_DATA_ERR_EID,
+    AMC_MIXER_TBLVAL_NONZER_DATA_ERR_EID = 23,
 
 /** \brief <tt> '' </tt>
 **  \event <tt> '' </tt>
@@ -436,7 +436,7 @@ typedef enum {
 **  message is received with one of this applications params and
 **  an error is encountered getting the updated value.
 */
-	AMC_PARAM_UPDATE_ERR_EID,
+	AMC_PARAM_UPDATE_ERR_EID = 24,
 
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
     AMC_EVT_CNT

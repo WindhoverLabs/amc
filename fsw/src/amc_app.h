@@ -73,8 +73,8 @@ extern "C" {
 
 typedef struct
 {
-    PX4_ActuatorControlsMsg_t ActuatorControls0;
     PX4_ActuatorArmedMsg_t    ActuatorArmed;
+    PX4_ActuatorControlsMsg_t ActuatorControls0;
 } AMC_CurrentValueTable_t;
 
 

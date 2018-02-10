@@ -46,6 +46,7 @@ extern "C" {
 #endif
 
 #include "cfe.h"
+#include "px4_msgs.h"
 
 
 /************************************************************************
@@ -150,6 +151,10 @@ typedef struct
     /** \amctlmmnemonic \AMC_CMDRJCTCNT
         \brief Count of failed commands */
     uint8              usCmdErrCnt; 
+
+    PX4_ActuatorArmedMsg_t    ActuatorArmed;
+    PX4_ActuatorControlsMsg_t ActuatorControls0;
+    PX4_ActuatorOutputsMsg_t  ActuatorOutputs;
 
 } AMC_HkTlm_t;
 
