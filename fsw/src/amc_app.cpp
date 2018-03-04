@@ -754,55 +754,6 @@ void AMC::UpdateMotors(void)
 			SetMotorOutputs(pwm);
 		}
 
-		/* TODO:  Delete this after PX4 bridge is no longer necessary.  This is
-		 * only here to satisfy the PWM Sim interface on the PX4 side.  The
-		 * message documentation states the actuator_outputs message is supposed
-		 * to be -1.0 to 1.0, which it is until the following step.  The problem
-		 * is the sim expects 1000.0 - 2000.0. */
-		{
-			for (unsigned i = 0; i < PX4_ACTUATOR_OUTPUTS_MAX; i++) {
-				/* last resort: catch NaN, INF and out-of-band errors */
-				if (i < ActuatorOutputs.Count &&
-					isfinite(ActuatorOutputs.Output[i]) &&
-					ActuatorOutputs.Output[i] >= -1.0f &&
-					ActuatorOutputs.Output[i] <= 1.0f) {
-					/* scale for PWM output 1000 - 2000us */
-					ActuatorOutputs.Output[i] = 1500 + (500 * ActuatorOutputs.Output[i]);
-
-				} else {
-					/*
-					 * Value is NaN, INF or out of band - set to the minimum value.
-					 * This will be clearly visible on the servo status and will limit the risk of accidentally
-					 * spinning motors. It would be deadly in flight.
-					 */
-					ActuatorOutputs.Output[i] = PWM_SIM_DISARMED_MAGIC;
-				}
-			}
-			ActuatorOutputs.Output[6] = 1500.0f;
-			ActuatorOutputs.Output[7] = 1500.0f;
-			ActuatorOutputs.Output[8] = 1500.0f;
-			ActuatorOutputs.Output[9] = 1000.0f;
-			ActuatorOutputs.Output[10] = 1000.0f;
-		}
-
-//		OS_printf("ActuatorOutputs.Count = %u (11)\n" , ActuatorOutputs.Count);
-//		OS_printf("ActuatorOutputs.Output[0] = %f (1396.680176)\n" , ActuatorOutputs.Output[0]);
-//		OS_printf("ActuatorOutputs.Output[1] = %f (1391.089600)\n" , ActuatorOutputs.Output[1]);
-//		OS_printf("ActuatorOutputs.Output[2] = %f (1385.925171)\n" , ActuatorOutputs.Output[2]);
-//		OS_printf("ActuatorOutputs.Output[3] = %f (1401.844604)\n" , ActuatorOutputs.Output[3]);
-//		OS_printf("ActuatorOutputs.Output[4] = %f (1407.727173)\n" , ActuatorOutputs.Output[4]);
-//		OS_printf("ActuatorOutputs.Output[5] = %f (1380.042480)\n" , ActuatorOutputs.Output[5]);
-//		OS_printf("ActuatorOutputs.Output[6] = %f (1500.000000)\n" , ActuatorOutputs.Output[6]);
-//		OS_printf("ActuatorOutputs.Output[7] = %f (1500.000000)\n" , ActuatorOutputs.Output[7]);
-//		OS_printf("ActuatorOutputs.Output[8] = %f (1500.000000)\n" , ActuatorOutputs.Output[8]);
-//		OS_printf("ActuatorOutputs.Output[9] = %f (1000.000000)\n" , ActuatorOutputs.Output[9]);
-//		OS_printf("ActuatorOutputs.Output[10] = %f (1000.000000)\n" , ActuatorOutputs.Output[10]);
-//		OS_printf("ActuatorOutputs.Output[11] = %f (nan)\n" , ActuatorOutputs.Output[11]);
-//		OS_printf("ActuatorOutputs.Output[12] = %f (nan)\n" , ActuatorOutputs.Output[12]);
-//		OS_printf("ActuatorOutputs.Output[13] = %f (nan)\n" , ActuatorOutputs.Output[13]);
-//		OS_printf("ActuatorOutputs.Output[14] = %f (nan)\n" , ActuatorOutputs.Output[14]);
-//		OS_printf("ActuatorOutputs.Output[15] = %f (nan)\n" , ActuatorOutputs.Output[15]);
-
 		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
 		CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
     }

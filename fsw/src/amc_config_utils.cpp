@@ -278,6 +278,8 @@ int32 AMC::AcquireConfigPointers(void)
      * be sure this is the behavior you want. */
     (void) CFE_TBL_ReleaseAddress(PwmConfigTblHdl);
 
+    (void) CFE_TBL_ReleaseAddress(MixerConfigTblHdl);
+
     /*
     ** Manage the table
     */
