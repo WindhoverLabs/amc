@@ -152,6 +152,8 @@ typedef struct
         \brief Count of failed commands */
     uint8              usCmdErrCnt; 
 
+    uint32 padding;
+
     PX4_ActuatorArmedMsg_t    ActuatorArmed;
     PX4_ActuatorControlsMsg_t ActuatorControls0;
     PX4_ActuatorOutputsMsg_t  ActuatorOutputs;
