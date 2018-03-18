@@ -792,6 +792,7 @@ int32 AMC::ControlCallback(
     return iStatus;
 }
 
+
 int32 AMC::InitParams()
 {
     int32 iStatus = -1;
