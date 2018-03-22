@@ -48,6 +48,14 @@
 
 #include <time.h>
 
+namespace math
+{
+    const float &constrain(const float &val, const float &min_val, const float &max_val)
+    {
+        return (val < min_val) ? min_val : ((val > max_val) ? max_val : val);
+    }
+}
+
 /*
  * PWM Config table for testing
  */
@@ -103,4 +111,18 @@ void AMC_Test_Setup(void)
 
 void AMC_Test_TearDown(void) {
 
+}
+
+
+
+int32 PRMLIB_ParamRegister(char name[], void* inOutValue, PRMLIB_ParamType_t type)
+{
+    return 0;
+}
+
+
+
+int32 PRMLIB_GetParamValueById(char name[], void* InOutValue)
+{
+    return CFE_SUCCESS;
 }

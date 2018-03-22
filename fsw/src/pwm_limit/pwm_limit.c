@@ -43,6 +43,7 @@
 #include "pwm_limit.h"
 #include <math.h>
 #include <float.h>
+#include "px4lib.h"
 
 
 void PwmLimit_Init(PwmLimit_Data_t *limit)
@@ -71,17 +72,12 @@ void PwmLimit_Calc(const boolean armed, const boolean pre_armed, const unsigned 
 				/* set arming time for the first call */
 				if (limit->time_armed == 0)
 				{
-					uint32 secArmed = 0;
-					uint32 msArmed = 0;
-
 					/* reset arming time, used for ramp timing */
-					CFE_PSP_Get_Timebase(&secArmed, &msArmed);
-					limit->time_armed = secArmed*1000000 + msArmed;
+					limit->time_armed = PX4LIB_GetPX4TimeUs();
 				}
 
 				/* reset arming time, used for ramp timing */
-				CFE_PSP_Get_Timebase(&sec, &ms);
-				now = sec*1000000 + ms;
+				now = PX4LIB_GetPX4TimeUs();
 
 				delta = now - limit->time_armed;
 
@@ -98,12 +94,8 @@ void PwmLimit_Calc(const boolean armed, const boolean pre_armed, const unsigned 
 		{
 			if (armed)
 			{
-				uint32 sec = 0;
-				uint32 ms = 0;
-
 				/* reset arming time, used for ramp timing */
-				CFE_PSP_Get_Timebase(&sec, &ms);
-				limit->time_armed = sec*1000000 + ms;
+				limit->time_armed = PX4LIB_GetPX4TimeUs();
 
 				limit->state = PWM_LIMIT_STATE_RAMP;
 			}
@@ -282,16 +274,10 @@ void PwmLimit_Calc(const boolean armed, const boolean pre_armed, const unsigned 
 
 uint64 hrt_elapsed_time(uint64 *input)
 {
-    uint32 sec = 0;
-    uint32 ms = 0;
-    uint64 now = 0;
     uint64 delta = 0;
 
     /* reset arming time, used for ramp timing */
-    CFE_PSP_Get_Timebase(&sec, &ms);
-    now = sec*1000000 + ms;
-
-    delta = now - *input;
+    delta = PX4LIB_GetPX4TimeUs() - *input;
 
     return delta;
 }
