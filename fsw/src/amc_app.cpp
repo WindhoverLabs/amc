@@ -1,46 +1,47 @@
 /****************************************************************************
-*
-*   Copyright (c) 2017 Windhover Labs, L.L.C. All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*
-* 1. Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in
-*    the documentation and/or other materials provided with the
-*    distribution.
-* 3. Neither the name Windhover Labs nor the names of its 
-*    contributors may be used to endorse or promote products derived 
-*    from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-* OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-* AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ *
+ *   Copyright (c) 2017 Windhover Labs, L.L.C. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name Windhover Labs nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 
 /************************************************************************
-** Pragmas
-*************************************************************************/
+ ** Pragmas
+ *************************************************************************/
 
 /************************************************************************
-** Includes
-*************************************************************************/
+ ** Includes
+ *************************************************************************/
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <string.h>
@@ -60,7 +61,6 @@ extern "C" {
 /* TODO:  Delete this when the PWM is no longer simulated on the PX4 side. */
 #define PWM_SIM_DISARMED_MAGIC (900)
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Instantiate the application object.                             */
@@ -68,16 +68,15 @@ extern "C" {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 AMC oAMC;
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Default constructor.                                            */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-AMC::AMC() :
-    MixerObject(AMC::ControlCallback, (cpuaddr)&CVT.ActuatorControls0)
+AMC::AMC(void) :
+MixerObject(AMC::ControlCallback, (cpuaddr)&CVT.ActuatorControls0)
 {
-
+    return;
 }
 
 
@@ -88,27 +87,30 @@ AMC::AMC() :
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 AMC::~AMC()
 {
-
+    return;
 }
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Initialize event tables.                                        */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-int32 AMC::InitEvent()
+int32 AMC::InitEvent(void)
 {
-    int32  iStatus=CFE_SUCCESS;
-    uint32  ind = 0;
+    int32 iStatus=CFE_SUCCESS;
+    uint32 ind = 0;
 
     /* Register the table with CFE */
     iStatus = CFE_EVS_Register(0, 0, CFE_EVS_BINARY_FILTER);
     if (iStatus != CFE_SUCCESS)
     {
-        (void) CFE_ES_WriteToSysLog("AMC - Failed to register with EVS (0x%08X)\n", (unsigned int)iStatus);
+        CFE_ES_WriteToSysLog(
+                "AMC - Failed to register with EVS (0x%08X)\n",
+                (unsigned int)iStatus);
     }
 
-    return (iStatus);
+    return iStatus;
 }
 
 
@@ -117,122 +119,246 @@ int32 AMC::InitEvent()
 /* Initialize Message Pipes                                        */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-int32 AMC::InitPipe()
+int32 AMC::InitPipes(void)
 {
-    int32  iStatus=CFE_SUCCESS;
+    int32 iStatus=CFE_SUCCESS;
 
     /* Init schedule pipe and subscribe to wakeup messages */
-    iStatus = CFE_SB_CreatePipe(&SchPipeId,
-                                 AMC_SCH_PIPE_DEPTH,
-                                 AMC_SCH_PIPE_NAME);
+    iStatus = InitSchPipe();
     if (iStatus == CFE_SUCCESS)
     {
-        iStatus = CFE_SB_SubscribeEx(AMC_UPDATE_MOTORS_MID, SchPipeId, CFE_SB_Default_Qos, AMC_SCH_PIPE_WAKEUP_RESERVED);
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "Sch Pipe failed to subscribe to AMC_UPDATE_MOTORS_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
-
-        iStatus = CFE_SB_SubscribeEx(AMC_SEND_HK_MID, SchPipeId, CFE_SB_Default_Qos, AMC_SCH_PIPE_SEND_HK_RESERVED);
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "CMD Pipe failed to subscribe to AMC_SEND_HK_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
-
-        iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_ARMED_MID, SchPipeId, CFE_SB_Default_Qos, 1);
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "CMD Pipe failed to subscribe to PX4_ACTUATOR_ARMED_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
-
-        iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_CONTROLS_0_MID, SchPipeId, CFE_SB_Default_Qos, 1);
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "CMD Pipe failed to subscribe to PX4_ACTUATOR_CONTROLS_0_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
-
-    }
-    else
-    {
-        (void) CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
-                                 "Failed to create SCH pipe (0x%08X)",
-                                 (unsigned int)iStatus);
+        /* We failed to create the SCH pipe for scheduler messages.
+         * An event was already raised.  Just abort the function.
+         */
         goto AMC_InitPipe_Exit_Tag;
+
     }
 
     /* Init command pipe and subscribe to command messages */
-    iStatus = CFE_SB_CreatePipe(&CmdPipeId,
-                                 AMC_CMD_PIPE_DEPTH,
-                                 AMC_CMD_PIPE_NAME);
+    iStatus = InitCmdPipe();
     if (iStatus == CFE_SUCCESS)
     {
-        /* Subscribe to command messages */
-        iStatus = CFE_SB_Subscribe(AMC_CMD_MID, CmdPipeId);
+        /* We failed to create the CMD pipe for command messages.
+         * An event was already raised.  Just abort the function.
+         */
+        goto AMC_InitPipe_Exit_Tag;
 
-        if (iStatus != CFE_SUCCESS)
-        {
-            (void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                                     "CMD Pipe failed to subscribe to AMC_CMD_MID. (0x%08X)",
-                                     (unsigned int)iStatus);
-            goto AMC_InitPipe_Exit_Tag;
-        }
     }
-    else
+
+    /* Init param pipe and subscribe to param messages */
+    iStatus = InitParamPipe();
+    if (iStatus == CFE_SUCCESS)
     {
-        (void) CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
-                                 "Failed to create CMD pipe (0x%08X)",
-                                 (unsigned int)iStatus);
+        /* We failed to create the PARAM pipe for param requests.
+         * An event was already raised.  Just abort the function.
+         */
+        goto AMC_InitPipe_Exit_Tag;
+
+    }
+
+AMC_InitPipe_Exit_Tag:
+    return iStatus;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Initialize Message Pipes                                        */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 AMC::InitSchPipe(void)
+{
+    int32 iStatus=CFE_SUCCESS;
+
+    /* First, create all the pipes. */
+    /* Init schedule pipe and subscribe to wakeup messages */
+    iStatus = CFE_SB_CreatePipe(&SchPipeId,
+            AMC_SCH_PIPE_DEPTH,
+            AMC_SCH_PIPE_NAME);
+    if (iStatus == CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for scheduler messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to create SCH pipe (0x%08X)",
+                (unsigned int)iStatus);
+
         goto AMC_InitPipe_Exit_Tag;
     }
 
-    /* Init param pipe and subscribe to messages on the data pipe */
-	iStatus = CFE_SB_CreatePipe(&ParamPipeId,
-								AMC_PARAM_PIPE_DEPTH,
-								AMC_PARAM_PIPE_NAME);
-	if (iStatus == CFE_SUCCESS)
-	{
-		/* Subscribe to data messages */
-		iStatus = CFE_SB_Subscribe(PRMLIB_PARAM_UPDATED_MID, ParamPipeId);
+    /* Subscribe to the AMC_UPDATE_MOTORS_MID message. */
+    iStatus = CFE_SB_SubscribeEx(AMC_UPDATE_MOTORS_MID, SchPipeId,
+            CFE_SB_Default_Qos, AMC_SCH_PIPE_WAKEUP_RESERVED);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "Sch Pipe failed to subscribe to AMC_UPDATE_MOTORS_MID. \
+                (0x%08X)", (unsigned int)iStatus);
 
-		if (iStatus != CFE_SUCCESS)
-		{
-			(void) CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-									 "DATA Pipe failed to subscribe to PRMLIB_PARAM_UPDATED_MID. (0x%08X)",
-									 (unsigned int)iStatus);
-			goto AMC_InitPipe_Exit_Tag;
-		}
-	}
-	else
-	{
-		(void) CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
-								 "Failed to create Data pipe (0x%08X)",
-								 (unsigned int)iStatus);
-		goto AMC_InitPipe_Exit_Tag;
-	}
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the AMC_SEND_HK_MID message. */
+    iStatus = CFE_SB_SubscribeEx(AMC_SEND_HK_MID, SchPipeId,
+            CFE_SB_Default_Qos, AMC_SCH_PIPE_SEND_HK_RESERVED);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "SCH Pipe failed to subscribe to AMC_SEND_HK_MID. \
+                (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the PX4_ACTUATOR_ARMED_MID message. */
+    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_ARMED_MID, SchPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "SCH Pipe failed to subscribe to PX4_ACTUATOR_ARMED_MID. \
+                (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the PX4_ACTUATOR_CONTROLS_0_MID message. */
+    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_CONTROLS_0_MID, SchPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "SCH Pipe failed to subscribe to \
+                PX4_ACTUATOR_CONTROLS_0_MID. (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
 
 AMC_InitPipe_Exit_Tag:
-    return (iStatus);
+    return iStatus;
 }
-    
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Initialize Message Pipes                                        */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 AMC::InitCmdPipe(void)
+{
+    int32 iStatus=CFE_SUCCESS;
+
+    /* Init command pipe and subscribe to command messages */
+    iStatus = CFE_SB_CreatePipe(&CmdPipeId,
+            AMC_CMD_PIPE_DEPTH,
+            AMC_CMD_PIPE_NAME);
+    if (iStatus == CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for command messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to create CMD pipe (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the AMC_CMD_MID message to receive commands. */
+    iStatus = CFE_SB_SubscribeEx(AMC_CMD_MID, CmdPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus == CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for command messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "CMD Pipe failed to subscribe to AMC_CMD_MID. (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+AMC_InitPipe_Exit_Tag:
+    return iStatus;
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Initialize Message Pipes                                        */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 AMC::InitParamPipe(void)
+{
+    int32 iStatus=CFE_SUCCESS;
+
+    /* Init param pipe and subscribe to param messages */
+    iStatus = CFE_SB_CreatePipe(&ParamPipeId,
+            AMC_PARAM_PIPE_DEPTH,
+            AMC_PARAM_PIPE_NAME);
+    if (iStatus == CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for param messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to create PARAM pipe (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the PRMLIB_PARAM_UPDATED_MID message to receive
+     * parameter requests. */
+    iStatus = CFE_SB_SubscribeEx(PRMLIB_PARAM_UPDATED_MID, ParamPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus == CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for command messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "CMD Pipe failed to subscribe to PRMLIB_PARAM_UPDATED_MID. \
+                (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+AMC_InitPipe_Exit_Tag:
+    return iStatus;
+}
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Initialize Global Variables                                     */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void AMC::InitData()
+void AMC::InitData(void)
 {
     /* Init actuator outputs message */
     CFE_SB_InitMsg(&ActuatorOutputs,
@@ -240,7 +366,7 @@ void AMC::InitData()
 
     /* Init housekeeping message. */
     CFE_SB_InitMsg(&HkTlm,
-                   AMC_HK_TLM_MID, sizeof(HkTlm), TRUE);
+            AMC_HK_TLM_MID, sizeof(HkTlm), TRUE);
 
     memset(&CVT.ActuatorArmed, 0, sizeof(CVT.ActuatorArmed));
     memset(&CVT.ActuatorControls0, 0, sizeof(CVT.ActuatorControls0));
@@ -252,84 +378,81 @@ void AMC::InitData()
 /* AMC initialization                                              */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-int32 AMC::InitApp()
+int32 AMC::InitApp(void)
 {
-    int32  iStatus   = CFE_SUCCESS;
-    int8   hasEvents = 0;
+    int32 iStatus = CFE_SUCCESS;
 
+    /* Initialize the application to use CFE Events. */
     iStatus = InitEvent();
     if (iStatus != CFE_SUCCESS)
     {
-        (void) CFE_ES_WriteToSysLog("AMC - Failed to init events (0x%08X)\n", (unsigned int)iStatus);
+        CFE_ES_WriteToSysLog("AMC - Failed to init events (0x%08X)\n",
+                (unsigned int)iStatus);
         goto AMC_InitApp_Exit_Tag;
     }
-    else
-    {
-        hasEvents = 1;
-    }
 
-    iStatus = InitPipe();
+    /* Initialize the application to receive messages. */
+    iStatus = InitPipes();
     if (iStatus != CFE_SUCCESS)
     {
         goto AMC_InitApp_Exit_Tag;
     }
 
+    /* Initialize all internal data. */
     InitData();
 
+    /* Initialize the application to use tables. */
     iStatus = InitConfigTbl();
     if (iStatus != CFE_SUCCESS)
     {
         goto AMC_InitApp_Exit_Tag;
     }
 
+    /* Initialize the mixer object. */
     iStatus = MixerObject.SetConfigTablePtr(MixerConfigTblPtr);
     if (iStatus != CFE_SUCCESS)
     {
-        (void) CFE_EVS_SendEvent(AMC_MIXER_INIT_ERR_EID, CFE_EVS_ERROR,
-                                 "Failed to init mixer (0x%08x)",
-                                 (unsigned int)iStatus);
+        CFE_EVS_SendEvent(AMC_MIXER_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to init mixer (0x%08x)",
+                (unsigned int)iStatus);
         goto AMC_InitApp_Exit_Tag;
     }
 
+    /* Initialize the PwmLimit object for use. */
     PwmLimit_Init(&PwmLimit);
 
+    /* Initialize the hardware device for use. */
     iStatus = InitDevice();
     if (iStatus != CFE_SUCCESS)
     {
-        (void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
-                                 "Failed to init device (0x%08x)",
-                                 (unsigned int)iStatus);
+        CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to init device (0x%08x)",
+                (unsigned int)iStatus);
         goto AMC_InitApp_Exit_Tag;
     }
 
+    /* Initialize the application to use named parameters. */
     iStatus = InitParams();
-	if (iStatus != CFE_SUCCESS)
-	{
-		(void) CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
-								 "Failed to init params (0x%08x)",
-								 (unsigned int)iStatus);
-		goto AMC_InitApp_Exit_Tag;
-	}
+    if (iStatus != CFE_SUCCESS)
+    {
+        CFE_EVS_SendEvent(AMC_DEVICE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to init params (0x%08x)",
+                (unsigned int)iStatus);
+        goto AMC_InitApp_Exit_Tag;
+    }
 
 AMC_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
     {
-        (void) CFE_EVS_SendEvent(AMC_INIT_INF_EID, CFE_EVS_INFORMATION,
-                                 "Initialized.  Version %d.%d.%d.%d",
-                                 AMC_MAJOR_VERSION,
-                                 AMC_MINOR_VERSION,
-                                 AMC_REVISION,
-                                 AMC_MISSION_REV);
-    }
-    else
-    {
-        if (hasEvents == 1)
-        {
-            (void) CFE_ES_WriteToSysLog("AMC - Application failed to initialize\n");
-        }
+        CFE_EVS_SendEvent(AMC_INIT_INF_EID, CFE_EVS_INFORMATION,
+                "Initialized.  Version %d.%d.%d.%d",
+                AMC_MAJOR_VERSION,
+                AMC_MINOR_VERSION,
+                AMC_REVISION,
+                AMC_MISSION_REV);
     }
 
-    return (iStatus);
+    return iStatus;
 }
 
 
@@ -338,12 +461,11 @@ AMC_InitApp_Exit_Tag:
 /* Receive and Process Messages                                    */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 {
-    int32           iStatus=CFE_SUCCESS;
-    CFE_SB_Msg_t*   MsgPtr=NULL;
-    CFE_SB_MsgId_t  MsgId;
+    int32 iStatus=CFE_SUCCESS;
+    CFE_SB_Msg_t* MsgPtr=NULL;
+    CFE_SB_MsgId_t MsgId;
 
     /* Stop Performance Log entry */
     CFE_ES_PerfLogExit(AMC_MAIN_TASK_PERF_ID);
@@ -358,7 +480,7 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
     {
         MsgId = CFE_SB_GetMsgId(MsgPtr);
         switch (MsgId)
-	{
+        {
             case AMC_UPDATE_MOTORS_MID:
                 break;
 
@@ -371,27 +493,21 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 
             case PX4_ACTUATOR_ARMED_MID:
                 memcpy(&CVT.ActuatorArmed, MsgPtr, sizeof(CVT.ActuatorArmed));
-            	//DisplayInputs();
+                //DisplayInputs();
                 UpdateMotors();
                 break;
 
             case PX4_ACTUATOR_CONTROLS_0_MID:
-                memcpy(&CVT.ActuatorControls0, MsgPtr, sizeof(CVT.ActuatorControls0));
-            	//DisplayInputs();
+                memcpy(&CVT.ActuatorControls0, MsgPtr,
+                        sizeof(CVT.ActuatorControls0));
                 UpdateMotors();
                 break;
 
             default:
-                (void) CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
-                                  "Recvd invalid SCH msgId (0x%04X)", (unsigned short)MsgId);
+                CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                        "Recvd invalid SCH msgId (0x%04X)",
+                        (unsigned short)MsgId);
         }
-    }
-    else if (iStatus == CFE_SB_NO_MESSAGE)
-    {
-        /* TODO: If there's no incoming message, you can do something here, or 
-         * nothing.  Note, this section is dead code only if the iBlocking arg
-         * is CFE_SB_PEND_FOREVER. */
-        iStatus = CFE_SUCCESS;
     }
     else if (iStatus == CFE_SB_TIME_OUT)
     {
@@ -404,11 +520,11 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
     }
     else
     {
-        (void) CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
-			  "SCH pipe read error (0x%08X).", (unsigned int)iStatus);
+        CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                "SCH pipe read error (0x%08X).", (unsigned int)iStatus);
     }
 
-    return (iStatus);
+    return iStatus;
 }
 
 
@@ -417,93 +533,106 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
 /* Process Incoming Commands                                       */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void AMC::ProcessCmdPipe()
+void AMC::ProcessCmdPipe(void)
 {
     int32 iStatus = CFE_SUCCESS;
-    CFE_SB_Msg_t*   CmdMsgPtr=NULL;
-    CFE_SB_MsgId_t  CmdMsgId;
+    CFE_SB_Msg_t* CmdMsgPtr=NULL;
+    CFE_SB_MsgId_t CmdMsgId;
+    bool contProcessing = true;
 
     /* Process command messages until the pipe is empty */
-    while (1)
+    while (contProcessing)
     {
         iStatus = CFE_SB_RcvMsg(&CmdMsgPtr, CmdPipeId, CFE_SB_POLL);
         if(iStatus == CFE_SUCCESS)
         {
+            /* We did receive a message.  Process it. */
             CmdMsgId = CFE_SB_GetMsgId(CmdMsgPtr);
             switch (CmdMsgId)
             {
                 case AMC_CMD_MID:
+                    /* We did receive a command.  Process it. */
                     ProcessAppCmds(CmdMsgPtr);
                     break;
 
                 default:
                     /* Bump the command error counter for an unknown command.
-                     * (This should only occur if it was subscribed to with this
-                     *  pipe, but not handled in this switch-case.) */
+                     * (This should only occur if it was subscribed to with
+                     * this pipe, but not handled in this switch-case.) */
                     HkTlm.usCmdErrCnt++;
-                    (void) CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
-                                      "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
+                    CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                            "Recvd invalid CMD msgId (0x%04X)",
+                            (unsigned short)CmdMsgId);
                     break;
             }
         }
         else if (iStatus == CFE_SB_NO_MESSAGE)
         {
-            break;
+            /* The command pipe is empty.  Break the function and continue
+             * on. */
+            contProcessing = false;
         }
         else
         {
-            (void) CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
-                  "CMD pipe read error (0x%08X)", (unsigned int)iStatus);
-            break;
+            /* Something failed.  Quit the loop. */
+            CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                    "CMD pipe read error (0x%08X)", (unsigned int)iStatus);
+            contProcessing = false;
         }
     }
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/*                                                                 */
-/* Process Incoming Data	                                       */
-/*                                                                 */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void AMC::ProcessParamPipe()
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process Incoming Parameter requests                             */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void AMC::ProcessParamPipe(void)
 {
     int32 iStatus = CFE_SUCCESS;
-    CFE_SB_Msg_t*   CmdMsgPtr=NULL;
-    CFE_SB_MsgId_t  CmdMsgId;
+    CFE_SB_Msg_t* CmdMsgPtr=NULL;
+    CFE_SB_MsgId_t CmdMsgId;
+    bool contProcessing = true;
 
-    /* Process command messages until the pipe is empty */
-    while (1)
+    /* Process param messages until the pipe is empty */
+    while (contProcessing)
     {
         iStatus = CFE_SB_RcvMsg(&CmdMsgPtr, ParamPipeId, CFE_SB_POLL);
         if(iStatus == CFE_SUCCESS)
         {
+            /* We did receive a message.  Process it. */
             CmdMsgId = CFE_SB_GetMsgId(CmdMsgPtr);
             switch (CmdMsgId)
             {
                 case PRMLIB_PARAM_UPDATED_MID:
-                	ProcessUpdatedParam((PRMLIB_UpdatedParamMsg_t *) CmdMsgPtr);
+                    /* We did receive a parameter request.  Process it. */
+                    ProcessUpdatedParam(
+                            (PRMLIB_UpdatedParamMsg_t *) CmdMsgPtr);
                     break;
 
                 default:
                     /* Bump the command error counter for an unknown command.
-                     * (This should only occur if it was subscribed to with this
-                     *  pipe, but not handled in this switch-case.) */
+                     * (This should only occur if it was subscribed to with
+                     * this pipe, but not handled in this switch-case.) */
                     HkTlm.usCmdErrCnt++;
-                    (void) CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
-                                      "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
+                    CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                            "Recvd invalid CMD msgId (0x%04X)",
+                            (unsigned short)CmdMsgId);
                     break;
             }
         }
         else if (iStatus == CFE_SB_NO_MESSAGE)
         {
-            break;
+            /* The pipe is empty.  Break the loop and continue on. */
+            contProcessing = false;
         }
         else
         {
-            (void) CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
-                  "CMD pipe read error (0x%08X)", (unsigned int)iStatus);
-            break;
+            /* Something failed.  Quit the loop. */
+            CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                    "PARAM pipe read error (0x%08X)", (unsigned int)iStatus);
+            contProcessing = false;
         }
     }
 }
@@ -514,10 +643,9 @@ void AMC::ProcessParamPipe()
 /* Process AMC Commands                                            */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
 {
-    uint32  uiCmdCode=0;
+    uint32 uiCmdCode=0;
 
     if (MsgPtr != NULL)
     {
@@ -525,36 +653,43 @@ void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
         switch (uiCmdCode)
         {
             case AMC_NOOP_CC:
+                /* A NoOp command was received.  Increment the counter,
+                 * and raise a NOOP event. */
                 HkTlm.usCmdCnt++;
-                (void) CFE_EVS_SendEvent(AMC_CMD_NOOP_EID, CFE_EVS_INFORMATION,
-                                  "Recvd NOOP. Version %d.%d.%d.%d",
-                                  AMC_MAJOR_VERSION,
-                                  AMC_MINOR_VERSION,
-                                  AMC_REVISION,
-                                  AMC_MISSION_REV);
+                CFE_EVS_SendEvent(AMC_CMD_NOOP_EID, CFE_EVS_INFORMATION,
+                        "Recvd NOOP. Version %d.%d.%d.%d",
+                        AMC_MAJOR_VERSION,
+                        AMC_MINOR_VERSION,
+                        AMC_REVISION,
+                        AMC_MISSION_REV);
                 break;
 
             case AMC_RESET_CC:
+                /* A RESET command was received.  Reset both success and
+                 * error counters. */
                 HkTlm.usCmdCnt = 0;
                 HkTlm.usCmdErrCnt = 0;
                 break;
 
             default:
+                /* An unknown command was received.  Increment the command
+                 * error counter and raise an event. */
                 HkTlm.usCmdErrCnt++;
-                (void) CFE_EVS_SendEvent(AMC_CC_ERR_EID, CFE_EVS_ERROR,
-                                  "Recvd invalid command code (%u)", (unsigned int)uiCmdCode);
+                CFE_EVS_SendEvent(AMC_CC_ERR_EID, CFE_EVS_ERROR,
+                        "Recvd invalid command code (%u)",
+                        (unsigned int)uiCmdCode);
                 break;
         }
     }
 }
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Send AMC Housekeeping                                           */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void AMC::ReportHousekeeping()
+void AMC::ReportHousekeeping(void)
 {
     memcpy(&HkTlm.ActuatorArmed, &CVT.ActuatorArmed, sizeof(CVT.ActuatorArmed));
     memcpy(&HkTlm.ActuatorControls0, &CVT.ActuatorControls0, sizeof(CVT.ActuatorControls0));
@@ -569,8 +704,7 @@ void AMC::ReportHousekeeping()
 /* Publish Output Data                                             */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void AMC::SendActuatorOutputs()
+void AMC::SendActuatorOutputs(void)
 {
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
@@ -583,10 +717,10 @@ void AMC::SendActuatorOutputs()
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 boolean AMC::VerifyCmdLength(CFE_SB_Msg_t* MsgPtr,
-                           uint16 usExpectedLen)
+        uint16 usExpectedLen)
 {
-    boolean bResult  = TRUE;
-    uint16  usMsgLen = 0;
+    boolean bResult = TRUE;
+    uint16 usMsgLen = 0;
 
     if (MsgPtr != NULL)
     {
@@ -598,15 +732,15 @@ boolean AMC::VerifyCmdLength(CFE_SB_Msg_t* MsgPtr,
             CFE_SB_MsgId_t MsgId = CFE_SB_GetMsgId(MsgPtr);
             uint16 usCmdCode = CFE_SB_GetCmdCode(MsgPtr);
 
-            (void) CFE_EVS_SendEvent(AMC_MSGLEN_ERR_EID, CFE_EVS_ERROR,
-                              "Rcvd invalid msgLen: msgId=0x%08X, cmdCode=%d, "
-                              "msgLen=%d, expectedLen=%d",
-                              MsgId, usCmdCode, usMsgLen, usExpectedLen);
+            CFE_EVS_SendEvent(AMC_MSGLEN_ERR_EID, CFE_EVS_ERROR,
+                    "Rcvd invalid msgLen: msgId=0x%08X, cmdCode=%d, "
+                    "msgLen=%d, expectedLen=%d",
+                    MsgId, usCmdCode, usMsgLen, usExpectedLen);
             HkTlm.usCmdErrCnt++;
         }
     }
 
-    return (bResult);
+    return bResult;
 }
 
 
@@ -615,7 +749,7 @@ boolean AMC::VerifyCmdLength(CFE_SB_Msg_t* MsgPtr,
 /* AMC Application C style main entry point.                       */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void AMC_AppMain()
+void AMC_AppMain(void)
 {
     oAMC.AppMain();
 }
@@ -626,7 +760,7 @@ void AMC_AppMain()
 /* AMC Application C++ style main entry point.                     */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void AMC::AppMain()
+void AMC::AppMain(void)
 {
     /* Register the application with Executive Services */
     uiRunStatus = CFE_ES_APP_RUN;
@@ -634,7 +768,8 @@ void AMC::AppMain()
     int32 iStatus = CFE_ES_RegisterApp();
     if (iStatus != CFE_SUCCESS)
     {
-        (void) CFE_ES_WriteToSysLog("AMC - Failed to register the app (0x%08X)\n", (unsigned int)iStatus);
+        CFE_ES_WriteToSysLog("AMC - Failed to register the app (0x%08X)\n",
+                (unsigned int)iStatus);
     }
 
     /* Start Performance Log entry */
@@ -666,7 +801,8 @@ void AMC::AppMain()
         iStatus = AcquireConfigPointers();
         if(iStatus != CFE_SUCCESS)
         {
-            /* We apparently tried to load a new table but failed.  Terminate the application. */
+            /* We apparently tried to load a new table but failed.  Terminate
+             * the application. */
             uiRunStatus = CFE_ES_APP_ERROR;
         }
     }
@@ -688,7 +824,8 @@ void AMC::StopMotors(void)
 {
     uint16 disarmed_pwm[AMC_MAX_MOTOR_OUTPUTS];
 
-    for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
+    for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++)
+    {
         disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
     }
 
@@ -710,7 +847,8 @@ void AMC::UpdateMotors(void)
     uint16 pwm[AMC_MAX_MOTOR_OUTPUTS];
     PX4_ActuatorOutputsMsg_t outputs;
 
-    for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++) {
+    for (uint32 i = 0; i < AMC_MAX_MOTOR_OUTPUTS; i++)
+    {
         disarmed_pwm[i] = PwmConfigTblPtr->PwmDisarmed;
         min_pwm[i] = PwmConfigTblPtr->PwmMin;
         max_pwm[i] = PwmConfigTblPtr->PwmMax;
@@ -725,38 +863,39 @@ void AMC::UpdateMotors(void)
     }
     else if(CVT.ActuatorArmed.Armed)
     {
-		ActuatorOutputs.Timestamp = PX4LIB_GetPX4TimeUs();
+        ActuatorOutputs.Timestamp = PX4LIB_GetPX4TimeUs();
 
-		/* Do mixing */
-		ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
+        /* Do mixing */
+        ActuatorOutputs.Count = MixerObject.mix(ActuatorOutputs.Output, 0, 0);
 
-		/* Disable unused ports by setting their output to NaN */
-		for (size_t i = ActuatorOutputs.Count;
-			 i < sizeof(ActuatorOutputs.Output) / sizeof(ActuatorOutputs.Output[0]);
-			 i++)
-		{
-			ActuatorOutputs.Output[i] = NAN;
-		}
+        /* Disable unused ports by setting their output to NaN */
+        for (size_t i = ActuatorOutputs.Count;
+                i < sizeof(ActuatorOutputs.Output)
+                        / sizeof(ActuatorOutputs.Output[0]);
+                i++)
+        {
+            ActuatorOutputs.Output[i] = NAN;
+        }
 
-		PwmLimit_Calc(
-				CVT.ActuatorArmed.Armed,
-				FALSE/*_armed.prearmed*/,
-				ActuatorOutputs.Count,
-				reverse_mask,
-				disarmed_pwm,
-				min_pwm,
-				max_pwm,
-				ActuatorOutputs.Output,
-				pwm,
-				&PwmLimit);
+        PwmLimit_Calc(
+                CVT.ActuatorArmed.Armed,
+                FALSE/*_armed.prearmed*/,
+                ActuatorOutputs.Count,
+                reverse_mask,
+                disarmed_pwm,
+                min_pwm,
+                max_pwm,
+                ActuatorOutputs.Output,
+                pwm,
+                &PwmLimit);
 
-		if(!CVT.ActuatorArmed.InEscCalibrationMode)
-		{
-			SetMotorOutputs(pwm);
-		}
+        if(!CVT.ActuatorArmed.InEscCalibrationMode)
+        {
+            SetMotorOutputs(pwm);
+        }
 
-		CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
-		CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
+        CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
+        CFE_SB_SendMsg((CFE_SB_Msg_t*)&ActuatorOutputs);
     }
     else
     {
@@ -778,12 +917,17 @@ int32 AMC::ControlCallback(
 {
     int32 iStatus = 0;
 
-    const PX4_ActuatorControlsMsg_t *controls = (PX4_ActuatorControlsMsg_t*)Handle;
+    const PX4_ActuatorControlsMsg_t *controls =
+            (PX4_ActuatorControlsMsg_t*)Handle;
 
     if(ControlGroup > 0)
+    {
         iStatus = -1;
+    }
     else if(ControlIndex > 8)
+    {
         iStatus = -1;
+    }
     else
     {
         Control = controls[ControlGroup].Control[ControlIndex];
@@ -794,76 +938,94 @@ int32 AMC::ControlCallback(
 }
 
 
-int32 AMC::InitParams()
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Initialize named parameters.                                    */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 AMC::InitParams(void)
 {
     int32 iStatus = -1;
     PRMLIB_ParamData_t param = {0};
 
-	/* Lock the mutex */
-	OS_MutSemTake(PwmConfigMutex);
+    /* Lock the mutex */
+    OS_MutSemTake(PwmConfigMutex);
 
-	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
-	if(iStatus != CFE_SUCCESS)
-	{
-		goto InitParams_Exit_Tag;
-	}
+    iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED,
+            &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
+    if(iStatus != CFE_SUCCESS)
+    {
+        goto InitParams_Exit_Tag;
+    }
 
-	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin, TYPE_UINT32);
-	if(iStatus != CFE_SUCCESS)
-	{
-		goto InitParams_Exit_Tag;
-	}
+    iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MIN,
+            &PwmConfigTblPtr->PwmMin, TYPE_UINT32);
+    if(iStatus != CFE_SUCCESS)
+    {
+        goto InitParams_Exit_Tag;
+    }
 
-	iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax, TYPE_UINT32);
-	if(iStatus != CFE_SUCCESS)
-	{
-		goto InitParams_Exit_Tag;
-	}
+    iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_MAX,
+            &PwmConfigTblPtr->PwmMax, TYPE_UINT32);
+    if(iStatus != CFE_SUCCESS)
+    {
+        goto InitParams_Exit_Tag;
+    }
 
 InitParams_Exit_Tag:
     /* Unlock the mutex */
-	OS_MutSemGive(PwmConfigMutex);
+    OS_MutSemGive(PwmConfigMutex);
 
     return iStatus;
 }
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process a request to update named parameters.                   */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int32 AMC::ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr)
 {
     int32 iStatus = CFE_SUCCESS;
 
-	/* Lock the mutex */
-	OS_MutSemTake(PwmConfigMutex);
+    /* Lock the mutex */
+    OS_MutSemTake(PwmConfigMutex);
 
-	if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
-	{
-		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED, &PwmConfigTblPtr->PwmDisarmed);
-		goto ProcessUpdatedParam_Exit_Tag;
-	}
+    if(strcmp(PARAM_ID_PWM_DISARMED, MsgPtr->name) == 0)
+    {
+        iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_DISARMED,
+                &PwmConfigTblPtr->PwmDisarmed);
+        goto ProcessUpdatedParam_Exit_Tag;
+    }
 
-	if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
-	{
-		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN, &PwmConfigTblPtr->PwmMin);
-		goto ProcessUpdatedParam_Exit_Tag;
-	}
+    if(strcmp(PARAM_ID_PWM_MIN, MsgPtr->name) == 0)
+    {
+        iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MIN,
+                &PwmConfigTblPtr->PwmMin);
+        goto ProcessUpdatedParam_Exit_Tag;
+    }
 
-	if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
-	{
-		iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX, &PwmConfigTblPtr->PwmMax);
-		goto ProcessUpdatedParam_Exit_Tag;
-	}
+    if(strcmp(PARAM_ID_PWM_MAX, MsgPtr->name) == 0)
+    {
+        iStatus = PRMLIB_GetParamValueById(PARAM_ID_PWM_MAX,
+                &PwmConfigTblPtr->PwmMax);
+        goto ProcessUpdatedParam_Exit_Tag;
+    }
 
 ProcessUpdatedParam_Exit_Tag:
-	/* Unlock the mutex */
-	OS_MutSemGive(PwmConfigMutex);
+    /* Unlock the mutex */
+    OS_MutSemGive(PwmConfigMutex);
 
-	if(iStatus != CFE_SUCCESS)
-	{
-		(void) CFE_EVS_SendEvent(AMC_PARAM_UPDATE_ERR_EID, CFE_EVS_ERROR,
-								 "Failed to update parameter: %s", MsgPtr->name);
-	}
+    if(iStatus != CFE_SUCCESS)
+    {
+        CFE_EVS_SendEvent(AMC_PARAM_UPDATE_ERR_EID, CFE_EVS_ERROR,
+                "Failed to update parameter: %s", MsgPtr->name);
+    }
 
     return iStatus;
 }
+
 
 #ifdef __cplusplus
 }

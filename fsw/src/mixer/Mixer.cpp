@@ -33,15 +33,27 @@
 
 #include "Mixer.h"
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Mixer constructor.                                              */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 Mixer::Mixer(ControlCallback ControlCb, cpuaddr CbHandle) :
     m_Next(nullptr),
     m_ControlCb(ControlCb),
     m_CbHandle(CbHandle)
 {
+    return;
 }
 
-float
-Mixer::get_control(uint8 group, uint8 index)
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Mixer get_control function.                                     */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+float Mixer::get_control(uint8 group, uint8 index)
 {
     float   value;
 
@@ -51,8 +63,12 @@ Mixer::get_control(uint8 group, uint8 index)
 }
 
 
-float
-Mixer::scale(const MixerScaler_t &scaler, float input)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Mixer scale function.                                           */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+float Mixer::scale(const MixerScaler_t &scaler, float input)
 {
     float output;
 
@@ -77,8 +93,13 @@ Mixer::scale(const MixerScaler_t &scaler, float input)
     return output;
 }
 
-int32
-Mixer::scale_check(const MixerScaler_t &scaler)
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Mixer scale_check function.                                     */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 Mixer::scale_check(const MixerScaler_t &scaler)
 {
     if (scaler.offset > 1.001f) {
         return 1;

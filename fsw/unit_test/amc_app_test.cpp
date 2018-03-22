@@ -95,7 +95,7 @@ void Test_AMC_InitPipe_Fail_CreateSCHPipe(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_CREATEPIPE_INDEX, expected, 1);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail SB create SCH pipe");
@@ -117,7 +117,7 @@ void Test_AMC_InitPipe_Fail_SubscribeWakeup(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_SUBSCRIBEEX_INDEX, expected, 1);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail CFE_SB_SubscribeEx for wakeup");
@@ -139,7 +139,7 @@ void Test_AMC_InitPipe_Fail_SubscribeSendHK(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_SUBSCRIBEEX_INDEX, expected, 2);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail CFE_SB_SubscribeEx for sendhk");
@@ -161,7 +161,7 @@ void Test_AMC_InitPipe_Fail_CreateCMDPipe(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_CREATEPIPE_INDEX, expected, 2);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail SB create CMD pipe");
@@ -183,7 +183,7 @@ void Test_AMC_InitPipe_Fail_SubscribeCMD(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_SUBSCRIBE_INDEX, expected, 1);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail CFE_SB_Subscribe for CMD");
@@ -205,7 +205,7 @@ void Test_AMC_InitPipe_Fail_CreateDATAPipe(void)
     Ut_CFE_SB_SetReturnCode(UT_CFE_SB_CREATEPIPE_INDEX, expected, 2);
 
     /* Execute the function being tested */
-    result = oAMC.InitPipe();
+    result = oAMC.InitPipes();
 
     /* Verify results */
     UtAssert_True (result == expected, "InitPipe, fail SB create DATA pipe");

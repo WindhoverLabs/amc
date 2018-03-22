@@ -84,7 +84,7 @@ typedef struct
 class AMC
 {
 public:
-    AMC();
+    AMC(void);
     ~AMC();
 
     /**\brief Scheduling Pipe ID */
@@ -221,7 +221,70 @@ public:
      **  \endreturns
      **
      *************************************************************************/
-    int32 InitPipe(void);
+    int32 InitPipes(void);
+
+    /************************************************************************/
+    /** \brief Initialize Scheduler pipes
+     **
+     **  \par Description
+     **       This function performs the steps required to setup
+     **       initialize the cFE Software Bus message pipes and subscribe to
+     **       messages for the AMC application.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \returns
+     **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+     **  \retstmt Return codes from #CFE_SB_CreatePipe        \endcode
+     **  \retstmt Return codes from #CFE_SB_SubscribeEx       \endcode
+     **  \retstmt Return codes from #CFE_SB_Subscribe         \endcode
+     **  \endreturns
+     **
+     *************************************************************************/
+    int32 InitSchPipe(void);
+
+    /************************************************************************/
+    /** \brief Initialize Command pipes
+     **
+     **  \par Description
+     **       This function performs the steps required to setup
+     **       initialize the cFE Software Bus message pipes and subscribe to
+     **       messages for the AMC application.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \returns
+     **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+     **  \retstmt Return codes from #CFE_SB_CreatePipe        \endcode
+     **  \retstmt Return codes from #CFE_SB_SubscribeEx       \endcode
+     **  \retstmt Return codes from #CFE_SB_Subscribe         \endcode
+     **  \endreturns
+     **
+     *************************************************************************/
+    int32 InitCmdPipe(void);
+
+    /************************************************************************/
+    /** \brief Initialize Parameter pipe
+     **
+     **  \par Description
+     **       This function performs the steps required to setup
+     **       initialize the cFE Software Bus message pipes and subscribe to
+     **       messages for the AMC application.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \returns
+     **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+     **  \retstmt Return codes from #CFE_SB_CreatePipe        \endcode
+     **  \retstmt Return codes from #CFE_SB_SubscribeEx       \endcode
+     **  \retstmt Return codes from #CFE_SB_Subscribe         \endcode
+     **  \endreturns
+     **
+     *************************************************************************/
+    int32 InitParamPipe(void);
 
     /************************************************************************/
     /** \brief Receive and process messages from the scheduler pipe.
