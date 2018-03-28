@@ -180,7 +180,7 @@ void Test_AMC_InitPipe_Fail_SubscribeCMD(void)
                    | CFE_SOFTWARE_BUS_SERVICE | CFE_SB_NOT_IMPLEMENTED;
     int32 expected = CFE_SB_BAD_ARGUMENT;
 
-    Ut_CFE_SB_SetReturnCode(UT_CFE_SB_SUBSCRIBE_INDEX, expected, 1);
+    Ut_CFE_SB_SetReturnCode(UT_CFE_SB_SUBSCRIBEEX_INDEX, expected, 2);
 
     /* Execute the function being tested */
     result = oAMC.InitPipes();

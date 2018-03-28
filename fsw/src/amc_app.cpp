@@ -125,7 +125,7 @@ int32 AMC::InitPipes(void)
 
     /* Init schedule pipe and subscribe to wakeup messages */
     iStatus = InitSchPipe();
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the SCH pipe for scheduler messages.
          * An event was already raised.  Just abort the function.
@@ -136,7 +136,7 @@ int32 AMC::InitPipes(void)
 
     /* Init command pipe and subscribe to command messages */
     iStatus = InitCmdPipe();
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the CMD pipe for command messages.
          * An event was already raised.  Just abort the function.
@@ -147,7 +147,7 @@ int32 AMC::InitPipes(void)
 
     /* Init param pipe and subscribe to param messages */
     iStatus = InitParamPipe();
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the PARAM pipe for param requests.
          * An event was already raised.  Just abort the function.
@@ -175,7 +175,7 @@ int32 AMC::InitSchPipe(void)
     iStatus = CFE_SB_CreatePipe(&SchPipeId,
             AMC_SCH_PIPE_DEPTH,
             AMC_SCH_PIPE_NAME);
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the pipe for scheduler messages.  Raise an
          * event and immediately jump to the end of the function to abort
@@ -270,7 +270,7 @@ int32 AMC::InitCmdPipe(void)
     iStatus = CFE_SB_CreatePipe(&CmdPipeId,
             AMC_CMD_PIPE_DEPTH,
             AMC_CMD_PIPE_NAME);
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the pipe for command messages.  Raise an
          * event and immediately jump to the end of the function to abort
@@ -286,7 +286,7 @@ int32 AMC::InitCmdPipe(void)
     /* Subscribe to the AMC_CMD_MID message to receive commands. */
     iStatus = CFE_SB_SubscribeEx(AMC_CMD_MID, CmdPipeId,
             CFE_SB_Default_Qos, 1);
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the pipe for command messages.  Raise an
          * event and immediately jump to the end of the function to abort
@@ -317,7 +317,7 @@ int32 AMC::InitParamPipe(void)
     iStatus = CFE_SB_CreatePipe(&ParamPipeId,
             AMC_PARAM_PIPE_DEPTH,
             AMC_PARAM_PIPE_NAME);
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the pipe for param messages.  Raise an
          * event and immediately jump to the end of the function to abort
@@ -334,7 +334,7 @@ int32 AMC::InitParamPipe(void)
      * parameter requests. */
     iStatus = CFE_SB_SubscribeEx(PRMLIB_PARAM_UPDATED_MID, ParamPipeId,
             CFE_SB_Default_Qos, 1);
-    if (iStatus == CFE_SUCCESS)
+    if (iStatus != CFE_SUCCESS)
     {
         /* We failed to create the pipe for command messages.  Raise an
          * event and immediately jump to the end of the function to abort
