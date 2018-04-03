@@ -421,6 +421,16 @@ int32 AMC::InitApp(void)
     /* Initialize the PwmLimit object for use. */
     PwmLimit_Init(&PwmLimit);
 
+    /* Register the cleanup callback */
+    iStatus = OS_TaskInstallDeleteHandler(CleanupCallback);
+    if (iStatus != CFE_SUCCESS)
+    {
+        CFE_EVS_SendEvent(AMC_DELETE_CB_REG_ERR_EID, CFE_EVS_ERROR,
+                                 "Failed to init register cleanup callback (0x%08X)",
+                                 (unsigned int)iStatus);
+        goto AMC_InitApp_Exit_Tag;
+    }
+
     /* Initialize the hardware device for use. */
     iStatus = InitDevice();
     if (iStatus != CFE_SUCCESS)
@@ -453,6 +463,17 @@ AMC_InitApp_Exit_Tag:
     }
 
     return iStatus;
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Cleanup prior to exit                                           */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void AMC::CleanupCallback()
+{
+    oAMC.StopMotors();
 }
 
 

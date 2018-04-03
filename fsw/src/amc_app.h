@@ -590,6 +590,8 @@ public:
 	**
 	*************************************************************************/
     int32 ProcessUpdatedParam(PRMLIB_UpdatedParamMsg_t* MsgPtr);
+
+    static void CleanupCallback(void);
 };
 
 #ifdef __cplusplus

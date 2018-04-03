@@ -438,6 +438,8 @@ typedef enum {
 */
 	AMC_PARAM_UPDATE_ERR_EID = 24,
 
+	AMC_DELETE_CB_REG_ERR_EID = 25,
+
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
     AMC_EVT_CNT
 } AMC_EventIds_t;
