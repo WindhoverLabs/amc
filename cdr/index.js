@@ -6,7 +6,7 @@ const CdrPlugin = require(path.join(global.CDR_INSTALL_DIR, '/commander/classes/
 
 module.exports = class CfeCdrPlugin extends CdrPlugin {
   constructor(urlBase) {
-    super(path.basename(__dirname), path.join(__dirname, 'web', urlBase));
+    super('amc', path.join(__dirname, 'web', urlBase));
   }
 
   getContent() {
