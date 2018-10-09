@@ -12,8 +12,8 @@
 #    notice, this list of conditions and the following disclaimer in
 #    the documentation and/or other materials provided with the
 #    distribution.
-# 3. Neither the name Windhover Labs nor the names of its 
-#    contributors may be used to endorse or promote products derived 
+# 3. Neither the name Windhover Labs nor the names of its
+#    contributors may be used to endorse or promote products derived
 #    from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -49,13 +49,16 @@ add_airliner_app_def(amc
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/mixer/MultirotorMixer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/pwm_limit/pwm_limit.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/pwm_limit/pwm_limit.h
-   
+
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
         ${PX4_MSGS_DIR}
 
     USER_DOCS   ${CMAKE_CURRENT_SOURCE_DIR}/user_doxy.in
     DESIGN_DOCS ${CMAKE_CURRENT_SOURCE_DIR}/detail_doxy.in
+
+    COMMANDER_PLUGIN
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cdr
 )
 
 add_airliner_app_unit_test(AMC-UT
@@ -92,12 +95,12 @@ add_airliner_app_unit_test(AMC-UT
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/mixer/MultirotorMixer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/pwm_limit/pwm_limit.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/pwm_limit/pwm_limit.h
-        
+
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/stubs/
-        
+
     VALGRIND_SUPPRESSION_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/valgrind.supp
 )
