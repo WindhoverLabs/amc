@@ -131,7 +131,10 @@ script.
   $('#AppName').text(ApplicationName);
   
   $('#AppCtrl_QueryApp').click(function(){
-    session.sendCommand('/CFE/CFE_ES_QueryOne', [{name:'Payload.Application', value:ApplicationName}]);
+    session.sendCommand({
+      ops_path: '/CFE/CFE_ES_QueryOne',
+      args: {name:'Payload.Application', value:ApplicationName}
+    });
   });
 
   $('#AppCtrl_StopApp').click(function(){
