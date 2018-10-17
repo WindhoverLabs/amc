@@ -10,11 +10,11 @@
               tr
                 th Cmd Count
                 td
-                  div(data-cdr={tlm:[{name:'/AMC/HK/CmdCnt'}],indicator:'text'}) ---
+                  div(data-cdr={tlm:[{name:'/AMC/HK/usCmdCnt'}],indicator:'text'}) ---
               tr
                 th Error Count
                 td
-                  div(data-cdr={tlm:[{name:'/AMC/HK/CmdErrCnt'}],indicator:'text'}) ---
+                  div(data-cdr={tlm:[{name:'/AMC/HK/usCmdErrCnt'}],indicator:'text'}) ---
     footer.btn-group(role="group")      
       button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/AMC/Noop'},indicator:'cmd'}) No-Op    
       button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/AMC/Reset'},indicator:'cmd'}) Reset

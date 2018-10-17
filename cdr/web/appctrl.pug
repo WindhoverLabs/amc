@@ -3,4 +3,159 @@
     header
       span.widget-icon
         i.fa.fa-table
-      h2 AMC - EMPTY
+      h2 AMC - Application Control
+    div.widget-body
+      table.table.table-condensed
+            tbody
+              tr
+                th App Name - Requested
+                td#AppName
+              tr
+                th App Name - Telemetered
+                td 
+                  span(data-cdr={tlm:[{name: '/CFE/CFE_ES_AppInfo_t/Name'}], indicator:'text'}) ---
+              tr
+                th ID
+                td
+                  input.form-control(width=50 data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/AppId'}], indicator:'text'}, value='---')
+              tr
+                th Type
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/Type'}], indicator:'text'}) ---
+              tr
+                th Entry Point
+                td
+                  input#AppCtrl_EntryPoint.form-control(width=50, data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/EntryPoint'}], indicator:'text'}, value='---')
+              tr
+                th File Name
+                td
+                  input#AppCtrl_FileName.form-control(width=50, data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/FileName'}], indicator:'text'}, value='---')
+              tr 
+                th Stack Size
+                td
+                  input#AppCtrl_StackSize.form-control(width=50, data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/StackSize'}], indicator:'text'}, value='---')
+              tr
+                th Module ID
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/ModuleId'}], indicator:'text'}) ---
+              tr
+                th Addr valid
+                td
+                  div.bool-led(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/AddressesAreValid'}], indicator:'text'})
+              tr 
+                th Code addr
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/CodeAddress', format:'0x%08x'}], indicator:'text'}) ---
+              tr
+                th Code size
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/CodeSize'}], indicator:'text'}) ---
+              tr
+                th Data Addr
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/DataAddress', format:'0x%08x'}], indicator:'text'}) ---
+              tr
+                th Data Size
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/DataSize'}], indicator:'text'}) ---
+              tr
+                th BSS Addr
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/BSSAddress', format:'0x%08x'}], indicator:'text'}) ---
+              tr
+                th BSS Size
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/BSSSize'}], indicator:'text'}) ---
+              tr
+                th Start Addr
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/StartAddress', format:'0x%08x'}], indicator:'text'}) ---
+              tr 
+                th Exception Action
+                td              
+                  input#AppCtrl_ExceptionAction.form-control(width=50, data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/ExceptionAction'}], indicator:'text'}, value='---')
+              tr
+                th Priority
+                td
+                  input#AppCtrl_Priority.form-control(width=50, data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/Priority'}], indicator:'text'}, value='---')
+              tr
+                th Main Task ID
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/MainTaskId'}], indicator:'text'}) ---
+              tr
+                th Execution Counter
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/ExecutionCounter'}], indicator:'text'}) ---
+              tr 
+                th Main Task Name
+                td
+                  span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/MainTaskName'}], indicator:'text'}) ---
+              tr
+                th Child Task Count
+                td
+                 span(data-cdr={tlm: [{name: '/CFE/CFE_ES_AppInfo_t/NumOfChildTasks'}], indicator:'text'}) ---
+    footer.btn-group(role="group")        
+      button#AppCtrl_QueryApp.btn.cdr-outline-primary Query
+      button.btn.cdr-outline-primary(data-cdr={cmd: {name: '/CFE/CFE_ES_QueryAllCmd_t'},indicator:'cmd'}) Query All
+      button#AppCtrl_StartApp.btn.cdr-outline-primary Start
+      button#AppCtrl_StopApp.btn.cdr-outline-primary Stop
+      button#AppCtrl_RestartApp.btn.cdr-outline-primary Restart
+      button#AppCtrl_ReloadApp.btn.cdr-outline-primary Reload
+  article.col-xs-12.col-sm-12
+      header
+        span.widget-icon
+          i.fa.fa-table
+        h2 AMC - Registered Applications
+      div.widget-body.table-responsive
+        table.table.table-condensed
+          tbody
+            tr  
+              th Core applications
+              td 
+                span(data-cdr={tlm: [{name: '/CFE/ES_HK/Payload.RegisteredCoreApps'}],indicator:'text'}) ---
+            tr
+              th External applications
+              td 
+                span(data-cdr={tlm: [{name: '/CFE/ES_HK/Payload.RegisteredExternalApps'}],indicator:'text'}) ---
+            tr
+              th Tasks
+              td 
+                span(data-cdr={tlm: [{name: '/CFE/ES_HK/Payload.RegisteredTasks'}],indicator:'text'}) ---
+            tr
+              th Libraries
+              td 
+                span(data-cdr={tlm: [{name: '/CFE/ES_HK/Payload.RegisteredLibs'}],indicator:'text'}) ---  
+script.
+  var ApplicationName = 'AMC';
+  
+  $('#AppName').text(ApplicationName);
+  
+  $('#AppCtrl_QueryApp').click(function(){
+    session.sendCommand('/CFE/CFE_ES_QueryOne', [{name:'Payload.Application', value:ApplicationName}]);
+  });
+
+  $('#AppCtrl_StopApp').click(function(){
+    session.sendCommand('/CFE/CFE_ES_StopApp', [{name:'Payload.Application', value:ApplicationName}]);
+  });
+
+  $('#AppCtrl_RestartApp').click(function(){
+    session.sendCommand('/CFE/CFE_ES_RestartApp', [{name:'Payload.Application', value:ApplicationName}]);
+  });
+   
+  $('#AppCtrl_StartApp').click(function(){
+    session.sendCommand('/CFE/CFE_ES_StartAppCmd_t', [
+      {name:'Payload.Application', value:ApplicationName},
+      {name:'Payload.AppEntryPoint', value:$('#AppCtrl_EntryPoint').val()},
+      {name:'Payload.AppFileName', value:$('#AppCtrl_FileName').val()},
+      {name:'Payload.StackSize', value:$('#AppCtrl_StackSize').val()},
+      {name:'Payload.ExceptionAction', value:$('#AppCtrl_ExceptionAction').val()},
+      {name:'Payload.Priority', value:$('#AppCtrl_Priority').val()}
+    ]);
+  });
+   
+  $('#AppCtrl_ReloadApp').click(function(){
+    session.sendCommand('/CFE/CFE_ES_AppReloadCmd_t', [
+      {name:'Payload.Application', value:ApplicationName},
+      {name:'Payload.AppFileName', value:$('#AppCtrl_FileName').val()}
+    ]);
+  });
