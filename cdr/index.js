@@ -38,30 +38,30 @@ module.exports = class CfeCdrPlugin extends CdrPlugin {
 					longDescription: 'Table Control',
 					filePath: '/tc.pug'
 				},
-        ef: {
-          type: CdrPlugin.ContentType.PANEL,
-          shortDescription: 'Event Filter',
-          longDescription: 'Event Filter',
-          filePath: '/ef.pug'
-        },
-        sch: {
-          type: CdrPlugin.ContentType.PANEL,
-          shortDescription: 'Scheduler',
-          longDescription: 'Scheduler',
-          filePath: '/sch.pug'
-        },
-        tlmc: {
-          type: CdrPlugin.ContentType.PANEL,
-          shortDescription: 'Telemetry Control',
-          longDescription: 'Telemetry Control',
-          filePath: '/tlmc.pug'
-        },
-        ao: {
-          type: CdrPlugin.ContentType.PANEL,
-          shortDescription: 'Actuator Outputs',
-          longDescription: 'Actuator Outputs',
-          filePath: '/ao.pug'
-        },
+                ef: {
+                    type: CdrPlugin.ContentType.PANEL,
+                    shortDescription: 'Event Filter',
+                    longDescription: 'Event Filter',
+                    filePath: '/ef.pug'
+                },
+                sch: {
+                    type: CdrPlugin.ContentType.PANEL,
+                    shortDescription: 'Scheduler',
+                    longDescription: 'Scheduler',
+                    filePath: '/sch.pug'
+                },
+                tlmc: {
+                    type: CdrPlugin.ContentType.PANEL,
+                    shortDescription: 'Telemetry Control',
+                    longDescription: 'Telemetry Control',
+                    filePath: '/tlmc.pug'
+                },
+                ao: {
+                    type: CdrPlugin.ContentType.PANEL,
+                    shortDescription: 'Actuator Outputs',
+                    longDescription: 'Actuator Outputs',
+                    filePath: '/ao.pug'
+                },
       }
     };
 
