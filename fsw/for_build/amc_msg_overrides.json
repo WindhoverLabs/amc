@@ -5,11 +5,18 @@
                 "operations": {
                     "Noop":             { "airliner_cc":  0, "macro": "AMC_CMD_MID", "airliner_msg": "AMC_NoArgCmd_t" },
                     "Reset":            { "airliner_cc":  1, "macro": "AMC_CMD_MID", "airliner_msg": "AMC_NoArgCmd_t" },
-                    "AMC_HkPacket_t":   {                    "macro": "AMC_HK_TLM_MID", "airliner_msg": "AMC_HkTlm_t" },
-                    "AMC_UpdateMotors": {                    "macro": "AMC_UPDATE_MOTORS_MID", "airliner_msg": AMC_NoArgCmd_t},
-                    "AMC_SendHk": {                          "macro": "AMC_SEND_HK_MID", "airliner_msg": AMC_NoArgCmd_t},
-                    
-                    
+                    "AMC_HkTlm_t":      {                    "macro": "AMC_HK_TLM_MID", "airliner_msg": "AMC_HkTlm_t" },
+                    "AMC_UpdateMotors": {                    "macro": "AMC_UPDATE_MOTORS_MID", "airliner_msg": "AMC_NoArgCmd_t"},
+                    "AMC_SendHk":       {                    "macro": "AMC_SEND_HK_MID", "airliner_msg": "AMC_NoArgCmd_t"}
+                },    
+                "scheduler": {
+                    "activities": [
+                        "AMC_SEND_HK_MID",
+                        "AMC_UPDATE_MOTORS_MID"
+                    ],
+                    "groups": [
+                        { "id": 1, "macro": "AMC_SCH_GRP" }
+                    ]
                 },
                 "events": [
                     {"macro": "AMC_INIT_INF_EID", "id": 1},

@@ -40,6 +40,7 @@ add_airliner_app_def(amc
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_config_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_msg.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_symbols.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_tbldefs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_version.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/mixer/Mixer.cpp
