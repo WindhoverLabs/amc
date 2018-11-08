@@ -1,3 +1,6 @@
+link(rel="stylesheet" href="amc/radar.css")
+script(src="amc/radar.js")
+        
 .row.os-theme-dark
   article.col-xs-12.col-sm-12
     header
@@ -79,3 +82,7 @@
             th Output 15
             td
               span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[15]'}], indicator:'text'}) ---
+              
+      div#viz
+      script.
+        loadViz();        
