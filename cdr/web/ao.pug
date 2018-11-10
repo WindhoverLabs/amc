@@ -154,6 +154,9 @@ script(src="amc/radar.js")
             
             var centroid = getPolygonCentroid(polyPoints);
             
+            dataBlob.finish();
+            centroidMarker.finish();
+            
             if($('#AMC_AOUseAnimate').is(':checked')) {
                 dataBlob.animate(avgTimeDelta).plot(polyPoints);
                 centroidMarker.animate(avgTimeDelta).center(centroid.x, centroid.y);
