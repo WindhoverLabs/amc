@@ -31,12 +31,6 @@ module.exports = class CfeCdrPlugin extends CdrPlugin {
                     shortDescription: 'Actuator Outputs',
                     longDescription: 'Actuator Outputs',
                     filePath: '/ao.pug'
-                },
-                radarjs: {
-                    filePath: '/radar.js'
-                },
-                radarcss: {
-                    filePath: '/radar.css'
                 }
       }
     };
