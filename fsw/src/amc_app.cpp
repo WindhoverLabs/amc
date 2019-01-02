@@ -712,9 +712,16 @@ void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void AMC::ReportHousekeeping(void)
 {
-    memcpy(&HkTlm.ActuatorArmed, &CVT.ActuatorArmed, sizeof(CVT.ActuatorArmed));
-    memcpy(&HkTlm.ActuatorControls0, &CVT.ActuatorControls0, sizeof(CVT.ActuatorControls0));
-    memcpy(&HkTlm.ActuatorOutputs, &ActuatorOutputs, sizeof(ActuatorOutputs));
+	uint32 i = 0;
+
+	HkTlm.Timestamp = ActuatorOutputs.Timestamp;
+    HkTlm.Count = ActuatorOutputs.Count;
+
+    for(i = 0; i < PX4_ACTUATOR_OUTPUTS_MAX; ++i)
+    {
+    	HkTlm.Output[i] = ActuatorOutputs.Output[i];
+    }
+
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&HkTlm);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&HkTlm);
 }
