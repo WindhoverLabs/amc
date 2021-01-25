@@ -57,6 +57,8 @@ extern "C"
 #include "prm_lib.h"
 #include "prm_ids.h"
 #include "px4lib.h"
+#include "px4lib_msgids.h"
+#include "prmlib_msgids.h"
 
 /* TODO:  Delete this when the PWM is no longer simulated on the PX4 side. */
 #define PWM_SIM_DISARMED_MAGIC (900)
@@ -145,6 +147,18 @@ int32 AMC::InitPipes(void)
 
     }
 
+    /* Init data pipe and subscribe to data messages from the other
+     * applications. */
+    iStatus = InitDataPipe();
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* We failed to create the DATA pipe for data messages.
+         * An event was already raised.  Just abort the function.
+         */
+        goto AMC_InitPipe_Exit_Tag;
+
+    }
+
     /* Init param pipe and subscribe to param messages */
     iStatus = InitParamPipe();
     if (iStatus != CFE_SUCCESS)
@@ -219,38 +233,6 @@ int32 AMC::InitSchPipe(void)
         goto AMC_InitPipe_Exit_Tag;
     }
 
-    /* Subscribe to the PX4_ACTUATOR_ARMED_MID message. */
-    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_ARMED_MID, SchPipeId,
-            CFE_SB_Default_Qos, 1);
-    if (iStatus != CFE_SUCCESS)
-    {
-        /* The subscribe failed.  Raise an event and immediately jump
-         * to the end of the function to abort initialization.
-         */
-        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                "SCH Pipe failed to subscribe to PX4_ACTUATOR_ARMED_MID. \
-                (0x%08X)",
-                (unsigned int)iStatus);
-
-        goto AMC_InitPipe_Exit_Tag;
-    }
-
-    /* Subscribe to the PX4_ACTUATOR_CONTROLS_0_MID message. */
-    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_CONTROLS_0_MID, SchPipeId,
-            CFE_SB_Default_Qos, 1);
-    if (iStatus != CFE_SUCCESS)
-    {
-        /* The subscribe failed.  Raise an event and immediately jump
-         * to the end of the function to abort initialization.
-         */
-        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                "SCH Pipe failed to subscribe to \
-                PX4_ACTUATOR_CONTROLS_0_MID. (0x%08X)",
-                (unsigned int)iStatus);
-
-        goto AMC_InitPipe_Exit_Tag;
-    }
-
 AMC_InitPipe_Exit_Tag:
     return iStatus;
 }
@@ -302,6 +284,71 @@ int32 AMC::InitCmdPipe(void)
 AMC_InitPipe_Exit_Tag:
     return iStatus;
 }
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Initialize Message Pipes                                        */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+int32 AMC::InitDataPipe(void)
+{
+    int32 iStatus=CFE_SUCCESS;
+
+    /* Init command pipe and subscribe to command messages */
+    iStatus = CFE_SB_CreatePipe(&DataPipeId,
+            AMC_DATA_PIPE_DEPTH,
+            AMC_DATA_PIPE_NAME);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* We failed to create the pipe for command messages.  Raise an
+         * event and immediately jump to the end of the function to abort
+         * initialization.
+         */
+        CFE_EVS_SendEvent(AMC_PIPE_INIT_ERR_EID, CFE_EVS_ERROR,
+                "Failed to create DATA pipe (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the PX4_ACTUATOR_ARMED_MID message. */
+    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_ARMED_MID, DataPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "DATA Pipe failed to subscribe to PX4_ACTUATOR_ARMED_MID. \
+                (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+    /* Subscribe to the PX4_ACTUATOR_CONTROLS_0_MID message. */
+    iStatus = CFE_SB_SubscribeEx(PX4_ACTUATOR_CONTROLS_0_MID, DataPipeId,
+            CFE_SB_Default_Qos, 1);
+    if (iStatus != CFE_SUCCESS)
+    {
+        /* The subscribe failed.  Raise an event and immediately jump
+         * to the end of the function to abort initialization.
+         */
+        CFE_EVS_SendEvent(AMC_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
+                "DATA Pipe failed to subscribe to \
+                PX4_ACTUATOR_CONTROLS_0_MID. (0x%08X)",
+                (unsigned int)iStatus);
+
+        goto AMC_InitPipe_Exit_Tag;
+    }
+
+AMC_InitPipe_Exit_Tag:
+    return iStatus;
+}
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -368,8 +415,8 @@ void AMC::InitData(void)
     CFE_SB_InitMsg(&HkTlm,
             AMC_HK_TLM_MID, sizeof(HkTlm), TRUE);
 
-    memset(&CVT.ActuatorArmed, 0, sizeof(CVT.ActuatorArmed));
-    memset(&CVT.ActuatorControls0, 0, sizeof(CVT.ActuatorControls0));
+    CFE_PSP_MemSet(&CVT.ActuatorArmed, 0, sizeof(CVT.ActuatorArmed));
+    CFE_PSP_MemSet(&CVT.ActuatorControls0, 0, sizeof(CVT.ActuatorControls0));
 }
 
 
@@ -503,31 +550,26 @@ int32 AMC::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case AMC_UPDATE_MOTORS_MID:
+            {
+                ProcessDataPipe();
                 break;
+            }
 
             case AMC_SEND_HK_MID:
+            {
                 ReportHousekeeping();
                 // TODO: Move these somewhere more appropriate later
                 ProcessParamPipe();
                 ProcessCmdPipe();
                 break;
-
-            case PX4_ACTUATOR_ARMED_MID:
-                memcpy(&CVT.ActuatorArmed, MsgPtr, sizeof(CVT.ActuatorArmed));
-                //DisplayInputs();
-                UpdateMotors();
-                break;
-
-            case PX4_ACTUATOR_CONTROLS_0_MID:
-                memcpy(&CVT.ActuatorControls0, MsgPtr,
-                        sizeof(CVT.ActuatorControls0));
-                UpdateMotors();
-                break;
+            }
 
             default:
+            {
                 CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
                         "Recvd invalid SCH msgId (0x%04X)",
                         (unsigned short)MsgId);
+            }
         }
     }
     else if (iStatus == CFE_SB_TIME_OUT)
@@ -572,11 +614,14 @@ void AMC::ProcessCmdPipe(void)
             switch (CmdMsgId)
             {
                 case AMC_CMD_MID:
+                {
                     /* We did receive a command.  Process it. */
                     ProcessAppCmds(CmdMsgPtr);
                     break;
+                }
 
                 default:
+                {
                     /* Bump the command error counter for an unknown command.
                      * (This should only occur if it was subscribed to with
                      * this pipe, but not handled in this switch-case.) */
@@ -585,6 +630,7 @@ void AMC::ProcessCmdPipe(void)
                             "Recvd invalid CMD msgId (0x%04X)",
                             (unsigned short)CmdMsgId);
                     break;
+                }
             }
         }
         else if (iStatus == CFE_SB_NO_MESSAGE)
@@ -601,6 +647,74 @@ void AMC::ProcessCmdPipe(void)
             contProcessing = false;
         }
     }
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Process Incoming Data Messages                                  */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void AMC::ProcessDataPipe(void)
+{
+    int32 iStatus = CFE_SUCCESS;
+    CFE_SB_Msg_t* MsgPtr=NULL;
+    CFE_SB_MsgId_t MsgId;
+    bool contProcessing = true;
+
+    /* Process command messages until the pipe is empty */
+    while (contProcessing)
+    {
+        iStatus = CFE_SB_RcvMsg(&MsgPtr, DataPipeId, CFE_SB_POLL);
+        if(iStatus == CFE_SUCCESS)
+        {
+            /* We did receive a message.  Process it. */
+            MsgId = CFE_SB_GetMsgId(MsgPtr);
+            switch (MsgId)
+            {
+                case PX4_ACTUATOR_ARMED_MID:
+                {
+                    CFE_PSP_MemCpy(&CVT.ActuatorArmed, MsgPtr, sizeof(CVT.ActuatorArmed));
+                    UpdateMotors();
+                    break;
+                }
+
+                case PX4_ACTUATOR_CONTROLS_0_MID:
+                {
+                    CFE_PSP_MemCpy(&CVT.ActuatorControls0, MsgPtr,
+                        sizeof(CVT.ActuatorControls0));
+                    break;
+                }
+
+                default:
+                {
+                    /* Bump the command error counter for an unknown command.
+                     * (This should only occur if it was subscribed to with
+                     * this pipe, but not handled in this switch-case.) */
+                    HkTlm.usCmdErrCnt++;
+                    CFE_EVS_SendEvent(AMC_MSGID_ERR_EID, CFE_EVS_ERROR,
+                            "Recvd invalid DATA msgId (0x%04X)",
+                            (unsigned short)MsgId);
+                    break;
+                }
+            }
+        }
+        else if (iStatus == CFE_SB_NO_MESSAGE)
+        {
+            /* The command pipe is empty.  Break the function and continue
+             * on. */
+            contProcessing = false;
+        }
+        else
+        {
+            /* Something failed.  Quit the loop. */
+            CFE_EVS_SendEvent(AMC_RCVMSG_ERR_EID, CFE_EVS_ERROR,
+                    "DATA pipe read error (0x%08X)", (unsigned int)iStatus);
+            contProcessing = false;
+        }
+    }
+
+    UpdateMotors();
 }
 
 
@@ -627,12 +741,15 @@ void AMC::ProcessParamPipe(void)
             switch (CmdMsgId)
             {
                 case PRMLIB_PARAM_UPDATED_MID:
+                {
                     /* We did receive a parameter request.  Process it. */
                     ProcessUpdatedParam(
                             (PRMLIB_UpdatedParamMsg_t *) CmdMsgPtr);
                     break;
+                }
 
                 default:
+                {
                     /* Bump the command error counter for an unknown command.
                      * (This should only occur if it was subscribed to with
                      * this pipe, but not handled in this switch-case.) */
@@ -641,6 +758,7 @@ void AMC::ProcessParamPipe(void)
                             "Recvd invalid CMD msgId (0x%04X)",
                             (unsigned short)CmdMsgId);
                     break;
+                }
             }
         }
         else if (iStatus == CFE_SB_NO_MESSAGE)
@@ -674,6 +792,7 @@ void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
         switch (uiCmdCode)
         {
             case AMC_NOOP_CC:
+            {
                 /* A NoOp command was received.  Increment the counter,
                  * and raise a NOOP event. */
                 HkTlm.usCmdCnt++;
@@ -684,15 +803,19 @@ void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
                         AMC_REVISION,
                         AMC_MISSION_REV);
                 break;
+            }
 
             case AMC_RESET_CC:
+            {
                 /* A RESET command was received.  Reset both success and
                  * error counters. */
                 HkTlm.usCmdCnt = 0;
                 HkTlm.usCmdErrCnt = 0;
                 break;
+            }
 
             default:
+            {
                 /* An unknown command was received.  Increment the command
                  * error counter and raise an event. */
                 HkTlm.usCmdErrCnt++;
@@ -700,6 +823,7 @@ void AMC::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
                         "Recvd invalid command code (%u)",
                         (unsigned int)uiCmdCode);
                 break;
+            }
         }
     }
 }
@@ -974,10 +1098,6 @@ int32 AMC::ControlCallback(
 int32 AMC::InitParams(void)
 {
     int32 iStatus = -1;
-    PRMLIB_ParamData_t param = {0};
-
-    /* Lock the mutex */
-    OS_MutSemTake(PwmConfigMutex);
 
     iStatus = PRMLIB_ParamRegister(PARAM_ID_PWM_DISARMED,
             &PwmConfigTblPtr->PwmDisarmed, TYPE_UINT32);
@@ -1001,8 +1121,6 @@ int32 AMC::InitParams(void)
     }
 
 InitParams_Exit_Tag:
-    /* Unlock the mutex */
-    OS_MutSemGive(PwmConfigMutex);
 
     return iStatus;
 }

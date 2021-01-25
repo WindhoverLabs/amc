@@ -68,7 +68,7 @@ int32 MultirotorMixer::SetConfigTablePtr(
 
         /* shift to output range here to avoid runtime calculation */
         float idle_speed_fixed = -1.0f + m_ConfigTablePtr->IdleSpeed * 2.0f;
-        memset(m_OutputsPrev, idle_speed_fixed, sizeof(m_OutputsPrev));
+        CFE_PSP_MemSet(m_OutputsPrev, idle_speed_fixed, sizeof(m_OutputsPrev));
 
         return CFE_SUCCESS;
     }

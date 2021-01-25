@@ -66,6 +66,8 @@ extern "C" {
 /************************************************************************
  ** Local Defines
  *************************************************************************/
+#define AMC_DATA_PIPE_DEPTH    (2)
+#define AMC_DATA_PIPE_NAME     "AMC_DATA_PIPE"
 
 /************************************************************************
  ** Local Structure Definitions
@@ -92,6 +94,9 @@ public:
 
     /** \brief Command Pipe ID */
     CFE_SB_PipeId_t CmdPipeId;
+
+    /** \brief Data Pipe ID */
+    CFE_SB_PipeId_t DataPipeId;
 
     /** \brief Data Pipe ID */
     CFE_SB_PipeId_t ParamPipeId;
@@ -266,6 +271,27 @@ public:
     int32 InitCmdPipe(void);
 
     /************************************************************************/
+    /** \brief Initialize Data pipes
+     **
+     **  \par Description
+     **       This function performs the steps required to setup
+     **       initialize the cFE Software Bus message pipes and subscribe to
+     **       messages for the AMC application.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \returns
+     **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+     **  \retstmt Return codes from #CFE_SB_CreatePipe        \endcode
+     **  \retstmt Return codes from #CFE_SB_SubscribeEx       \endcode
+     **  \retstmt Return codes from #CFE_SB_Subscribe         \endcode
+     **  \endreturns
+     **
+     *************************************************************************/
+    int32 InitDataPipe(void);
+
+    /************************************************************************/
     /** \brief Initialize Parameter pipe
      **
      **  \par Description
@@ -321,6 +347,19 @@ public:
      **
      *************************************************************************/
     void ProcessCmdPipe(void);
+
+    /************************************************************************/
+    /** \brief PWM Motor Controller Task incoming data processing
+     **
+     **  \par Description
+     **       This function processes incoming data messages subscribed
+     **       by AMC application
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     *************************************************************************/
+    void ProcessDataPipe(void);
 
     /************************************************************************/
     /** \brief PWM Motor Controller Task application commands
