@@ -32,7 +32,7 @@
 #############################################################################
 
 
-add_airliner_app_def(amc
+buildliner_add_app_def(amc
     FILE AMC
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/amc_app.cpp
@@ -62,7 +62,7 @@ add_airliner_app_def(amc
         ${PROJECT_SOURCE_DIR}/apps/amc/fsw/platform_inc
 )
 
-add_airliner_app_unit_test(amc-ut
+buildliner_add_app_unit_test(amc-ut
     UTASSERT
     NO_HELGRIND
     NO_MASSIF
